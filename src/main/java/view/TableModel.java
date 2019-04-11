@@ -36,15 +36,19 @@ public class TableModel<T> extends DefaultTableModel {
 
         switch (type.getName()) {
             case "model.Sportsman":
-                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "fname"});
+                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "fname", "lname", "mname", "age", "weight", "ResultName", "ContryName", "MedicineName"});
                 break;
             case "model.Discipline":
+                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name", "disciplineName"});
                 break;
             case "model.Result":
+                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"place", "year", "record", "DisciplineName", "resultName"});
                 break;
             case "model.Medicine":
+                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name", "medicineName"});
                 break;
             case "model.Country":
+                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name", "countryName"});
                 break;
         }
 
