@@ -1,6 +1,6 @@
 package database;
 
-import model.Sportsman;
+import model.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -59,6 +59,10 @@ public class ConnectionInfo {
             try {
                 Configuration configuration = getConfiguration();
                 configuration.addAnnotatedClass(Sportsman.class);
+                configuration.addAnnotatedClass(Country.class);
+                configuration.addAnnotatedClass(Discipline.class);
+                configuration.addAnnotatedClass(Medicine.class);
+                configuration.addAnnotatedClass(Result.class);
                 StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
                 sessionFactory = configuration.buildSessionFactory(builder.build());
 
