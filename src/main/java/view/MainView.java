@@ -121,7 +121,7 @@ public class MainView {
         if (connectDialog.isAccepted()) {
             this.connectionInfo = connectDialog.getConnectionInfo();
             try {
-                SessionFactory sessionFactory = this.connectionInfo.getConfiguration().buildSessionFactory();
+                SessionFactory sessionFactory = this.connectionInfo.getSessionFactory();
                 this.session = sessionFactory.openSession();
                 this.statusLabel.setText(String.format("Подключено: %s", this.connectionInfo.toString()));
             } catch (Exception ex) {
