@@ -1,22 +1,25 @@
 package view;
 
 import model.IModel;
+import model.Sportsman;
 
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class TableModel extends DefaultTableModel {
-    private final ArrayList<IModel> models;
+public class TableModel<T> extends DefaultTableModel {
+    private ArrayList<T> models;
+    private Class<T> type;
 
-    public TableModel(ArrayList<IModel> models) {
+    public TableModel(ArrayList<T> models) {
         this.models = models;
+        this.type = (Class<T>) models.get(0).getClass();
 
         String[] columnsNames = new String[0];
         ArrayList<Object[]> rows = new ArrayList<>();
 
-        for (IModel model : this.models) {
+        for (T model : this.models) {
             columnsNames = model.getColumnsNames();
 
             Object[] columns = model.getColumns();
@@ -31,7 +34,21 @@ public class TableModel extends DefaultTableModel {
             rows.add(columns);
         }
 
-        this.setDataVector(rows.toArray(new Object[0][]), columnsNames);
+        switch (type.getName()) {
+            case "model.Sportsman":
+                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "fname"});
+                break;
+            case "model.Discipline":
+                break;
+            case "model.Result":
+                break;
+            case "model.Medicine":
+                break;
+            case "model.Country":
+                break;
+        }
+
+
     }
 
     public IModel getModel(int index) {

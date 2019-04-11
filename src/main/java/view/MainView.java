@@ -167,7 +167,7 @@ public class MainView {
 
         this.currentEntity = entity;
         if (!models.isEmpty()) {
-//            this.table.setModel(new view.TableModel(models));
+            this.table.setModel(new view.TableModel(models));
             this.currentEntityLabel.setText(models.get(0).getClass().getName());
         }
     }
