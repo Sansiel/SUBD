@@ -3,6 +3,7 @@ package view;
 import database.ConnectionInfo;
 import model.*;
 import org.hibernate.*;
+import org.hibernate.query.Query;
 
 import javax.persistence.Table;
 import javax.swing.*;
@@ -158,7 +159,7 @@ public class MainView {
         }
 
         ArrayList<IModel> models = new ArrayList<>();
-        final Query query = this.session.createQuery(String.format("SELECT p FROM %s p ORDER BY id", ((Table) entity.getAnnotation(Table.class)).name()));
+        final Query query = this.session.createQuery(String.format("FROM %s ORDER BY id", entity.getName()));
         for (Object object : query.list()) {
             models.add((IModel) entity.cast(object));
         }
