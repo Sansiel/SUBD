@@ -5,11 +5,11 @@ import model.*;
 import org.hibernate.*;
 import org.hibernate.query.Query;
 
-import javax.persistence.Table;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -158,8 +158,9 @@ public class MainView {
         if (!this.tryConnect()) {
             return;
         }
-
-        final ArrayList<T> models = (ArrayList<T>) this.session.createQuery(String.format("FROM %s ORDER BY id", entity.getName()))
+//        String.format("FROM %s ORDER BY id", entity.getName())
+        List q = this.session.createQuery("FROM model.Sportsman").list();
+        ArrayList<T> models = (ArrayList<T>) q
                 .stream()
                 .map(e -> entity.cast(e))
                 .collect(Collectors.toList());

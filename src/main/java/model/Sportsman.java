@@ -25,31 +25,19 @@ public class Sportsman {
     @Column(name = "weight")
     private int weight;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name="ResultID", nullable=false)
     private Result result;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name="ContryID", nullable=false)
     private Country country;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name="MedicineID", nullable=false)
     private Medicine medicine;
 
     public Sportsman() {}
-
-    public Sportsman(int id, String fname, String mname, String lname, int age, int weight, Result result, Country country, Medicine medicine) {
-        this.id = id;
-        this.fname = fname;
-        this.mname = mname;
-        this.lname = lname;
-        this.age = age;
-        this.weight = weight;
-        this.result = result;
-        this.country = country;
-        this.medicine = medicine;
-    }
 
     public int getId() {
         return id;
