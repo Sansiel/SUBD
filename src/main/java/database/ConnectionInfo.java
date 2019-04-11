@@ -1,5 +1,8 @@
 package database;
 
+import model.Sportsman;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
 public class ConnectionInfo {
@@ -8,6 +11,7 @@ public class ConnectionInfo {
     private final String database;
     private final String user;
     private final String password;
+    private SessionFactory sessionFactory;
 
     public ConnectionInfo(String host, String port, String database, String user, String password) {
         this.host = host;
@@ -48,6 +52,21 @@ public class ConnectionInfo {
                 .setProperty("hibernate.connection.password", this.getPassword());
         configuration.configure();
         return configuration;
+    }
+
+    public SessionFactory getSessionFactory() {
+        if (sessionFactory == null) {
+            try {
+                Configuration configuration = getConfiguration();
+                configuration.addAnnotatedClass(Sportsman.class);
+                StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
+                sessionFactory = configuration.buildSessionFactory(builder.build());
+
+            } catch (Exception e) {
+                System.out.println("Исключение!" + e);
+            }
+        }
+        return sessionFactory;
     }
 
     @Override
