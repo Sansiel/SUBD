@@ -111,8 +111,67 @@ public class TableModel<T> extends DefaultTableModel {
 
     }
 
-    public T getModel(int index) {
-        return this.models.get(index);
+//    public T getModel(int index) {
+//        return this.models.get(index);
+//    }
+
+    public IModel getModel(int index) {
+        return new IModel() {
+            @Override
+            public String getModelName() {
+                return null;
+            }
+
+            @Override
+            public String getModelPluralName() {
+                return null;
+            }
+
+            @Override
+            public String[] getColumnsNames() {
+                return new String[0];
+            }
+
+            @Override
+            public Object[] getColumns() {
+                return new Object[0];
+            }
+
+            @Override
+            public Class[] getColumnsTypes() {
+                return new Class[0];
+            }
+
+            @Override
+            public Class[] getSubColumnsTypes() {
+                return new Class[0];
+            }
+
+            @Override
+            public Class[] getSubColumnsTargetTypes() {
+                return new Class[0];
+            }
+
+            @Override
+            public void setColumns(Object[] objects) {
+
+            }
+
+            @Override
+            public void setId(String id) {
+
+            }
+
+            @Override
+            public void setParentId(String id) {
+
+            }
+
+            @Override
+            public void setDeleted(boolean deleted) {
+
+            }
+        };
     }
 
     @Override

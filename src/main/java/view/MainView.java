@@ -58,15 +58,25 @@ public class MainView {
 
         JMenu tablesMenu = new JMenu("Справочники");
         {
-            JMenuItem openAuthorsMenuItem = new JMenuItem("sportsman");
-            openAuthorsMenuItem.addActionListener(event -> this.openTable(Sportsman.class));
-            tablesMenu.add(openAuthorsMenuItem);
+            JMenuItem openSportsmansMenuItem = new JMenuItem("Sportsman");
+            openSportsmansMenuItem.addActionListener(event -> this.openTable(Sportsman.class));
+            tablesMenu.add(openSportsmansMenuItem);
 
-            /*
-            *
-            *
-            *
-            * */
+            JMenuItem openResultsMenuItem = new JMenuItem("Result");
+            openResultsMenuItem.addActionListener(event -> this.openTable(Result.class));
+            tablesMenu.add(openResultsMenuItem);
+
+            JMenuItem openMedicinesMenuItem = new JMenuItem("Medicine");
+            openMedicinesMenuItem.addActionListener(event -> this.openTable(Medicine.class));
+            tablesMenu.add(openMedicinesMenuItem);
+
+            JMenuItem openCountriesMenuItem = new JMenuItem("Country");
+            openCountriesMenuItem.addActionListener(event -> this.openTable(Country.class));
+            tablesMenu.add(openCountriesMenuItem);
+
+            JMenuItem openDisciplinesMenuItem = new JMenuItem("Discipline");
+            openDisciplinesMenuItem.addActionListener(event -> this.openTable(Discipline.class));
+            tablesMenu.add(openDisciplinesMenuItem);
 
             menuBar.add(tablesMenu);
         }
@@ -159,7 +169,7 @@ public class MainView {
             return;
         }
 //        String.format("FROM %s ORDER BY id", entity.getName())
-        List q = this.session.createQuery("FROM model.Sportsman").list();
+        List q = this.session.createQuery(String.format("FROM %s ORDER BY id", entity.getName())).list();
         ArrayList<T> models = (ArrayList<T>) q
                 .stream()
                 .map(e -> entity.cast(e))
