@@ -11,6 +11,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class MainView {
     private JFrame frame;
@@ -153,21 +154,20 @@ public class MainView {
         this.statusLabel.setText("Отключено");
     }
 
-    private void openTable(Class entity) {
+    private <T> void openTable(Class<T> entity) {
         if (!this.tryConnect()) {
             return;
         }
 
-        ArrayList<IModel> models = new ArrayList<>();
-        final Query query = this.session.createQuery(String.format("FROM %s ORDER BY id", entity.getName()));
-        for (Object object : query.list()) {
-            models.add((IModel) entity.cast(object));
-        }
+        final ArrayList<T> models = (ArrayList<T>) this.session.createQuery(String.format("FROM %s ORDER BY id", entity.getName()))
+                .stream()
+                .map(e -> entity.cast(e))
+                .collect(Collectors.toList());
 
         this.currentEntity = entity;
         if (!models.isEmpty()) {
-            this.table.setModel(new view.TableModel(models));
-            this.currentEntityLabel.setText(models.get(0).getModelPluralName());
+//            this.table.setModel(new view.TableModel(models));
+            this.currentEntityLabel.setText(models.get(0).getClass().getName());
         }
     }
 
