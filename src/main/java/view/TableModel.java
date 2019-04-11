@@ -1,7 +1,6 @@
 package view;
 
-import model.IModel;
-import model.Sportsman;
+import model.*;
 
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
@@ -22,25 +21,57 @@ public class TableModel<T> extends DefaultTableModel {
         switch (type.getName()) {
             case "model.Sportsman":
                 rows = (ArrayList<Object[]>) ((ArrayList<Sportsman>) this.models).stream()
-                        .map(e -> new Object[]{"" + e.getId(),
+                        .map(e -> new Object[]{
+                                "" + e.getId(),
                                 e.getFname(),
                                 e.getLname(),
                                 e.getMname(),
                                 "" + e.getAge(),
                                 "" + e.getWeight(),
                                 "" + e.getResult().getPlace(),
-                                "" + e.getCountry().getName(),
-                                "" + e.getMedicine().getName()
+                                e.getCountry().getName(),
+                                e.getMedicine().getName()
                         })
                         .collect(Collectors.toList());
+                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "fname", "lname", "mname", "age", "weight", "ResultPlace", "CountryName", "MedicineName"});
                 break;
             case "model.Discipline":
+                rows = (ArrayList<Object[]>) ((ArrayList<Discipline>) this.models).stream()
+                        .map(e -> new Object[]{
+                                "" + e.getId(),
+                                e.getName()
+                        })
+                        .collect(Collectors.toList());
+                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name"});
                 break;
             case "model.Result":
+                rows = (ArrayList<Object[]>) ((ArrayList<Result>) this.models).stream()
+                        .map(e -> new Object[]{
+                                "" + e.getPlace(),
+                                "" + e.getYear(),
+                                "" + e.getRecord(),
+                                e.getDiscipline().getName()
+                        })
+                        .collect(Collectors.toList());
+                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"place", "year", "record", "DisciplineName"});
                 break;
             case "model.Medicine":
+                rows = (ArrayList<Object[]>) ((ArrayList<Medicine>) this.models).stream()
+                        .map(e -> new Object[]{
+                                "" + e.getId(),
+                                e.getName()
+                        })
+                        .collect(Collectors.toList());
+                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name"});
                 break;
             case "model.Country":
+                rows = (ArrayList<Object[]>) ((ArrayList<Country>) this.models).stream()
+                        .map(e -> new Object[]{
+                                "" + e.getId(),
+                                e.getName()
+                        })
+                        .collect(Collectors.toList());
+                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name"});
                 break;
         }
 
@@ -59,23 +90,23 @@ public class TableModel<T> extends DefaultTableModel {
 //            rows.add(columns);
 //        }
 
-        switch (type.getName()) {
-            case "model.Sportsman":
-                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "fname", "lname", "mname", "age", "weight", "ResultPlace", "CountryName", "MedicineName"});
-                break;
-            case "model.Discipline":
-                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name", "disciplineName"});
-                break;
-            case "model.Result":
-                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"place", "year", "record", "DisciplineName", "resultName"});
-                break;
-            case "model.Medicine":
-                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name", "medicineName"});
-                break;
-            case "model.Country":
-                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name", "countryName"});
-                break;
-        }
+//        switch (type.getName()) {
+//            case "model.Sportsman":
+//                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "fname", "lname", "mname", "age", "weight", "ResultPlace", "CountryName", "MedicineName"});
+//                break;
+//            case "model.Discipline":
+//                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name"});
+//                break;
+//            case "model.Result":
+//                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"place", "year", "record", "DisciplineName"});
+//                break;
+//            case "model.Medicine":
+//                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name"});
+//                break;
+//            case "model.Country":
+//                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name"});
+//                break;
+//        }
 
 
     }
