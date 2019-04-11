@@ -3,8 +3,8 @@ package view;
 import database.ConnectionInfo;
 import model.*;
 import org.hibernate.*;
-import org.hibernate.query.Query;
 
+import javax.persistence.Table;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class MainView {
 
         JMenu tablesMenu = new JMenu("Справочники");
         {
-            JMenuItem openAuthorsMenuItem = new JMenuItem("Sportsman");
+            JMenuItem openAuthorsMenuItem = new JMenuItem("sportsman");
             openAuthorsMenuItem.addActionListener(event -> this.openTable(Sportsman.class));
             tablesMenu.add(openAuthorsMenuItem);
 
@@ -158,7 +158,7 @@ public class MainView {
         }
 
         ArrayList<IModel> models = new ArrayList<>();
-        final Query query = this.session.createQuery(String.format("FROM %s ORDER BY id", entity.getName()));
+        final Query query = this.session.createQuery(String.format("SELECT p FROM %s p ORDER BY id", ((Table) entity.getAnnotation(Table.class)).name()));
         for (Object object : query.list()) {
             models.add((IModel) entity.cast(object));
         }
