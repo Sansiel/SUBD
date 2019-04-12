@@ -100,7 +100,13 @@ public class MainView {
 
             JButton addButton = new JButton("Добавить запись");
             addButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            addButton.addActionListener(event -> this.addEntity());
+            addButton.addActionListener(event -> {
+                try {
+                    this.addEntity();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
             buttonsPanel.add(addButton);
 
             JButton editButton = new JButton("Изменить запись");
@@ -182,8 +188,8 @@ public class MainView {
         }
     }
 
-    private void addEntity() {
-        if (!this.tryConnect() || this.currentEntity == null) {
+    private void addEntity() throws Exception {
+        /*if (!this.tryConnect() || this.currentEntity == null) {
             return;
         }
 
@@ -231,7 +237,31 @@ public class MainView {
             }
         }
 
-        this.openTable(this.currentEntity);
+        this.openTable(this.currentEntity);*/
+        if (this.currentEntity == null) throw new Exception("no");
+
+        switch (this.currentEntity.getName()) {
+            case "model.Sportsman":
+                SportsmanView sv = new SportsmanView(this.session);
+                sv.setVisible(true);
+                break;
+            case "model.Discipline":
+                DisciplineView dv = new DisciplineView(this.session);
+                dv.setVisible(true);
+                break;
+            case "model.Result":
+                ResultView rv = new ResultView(this.session);
+                rv.setVisible(true);
+                break;
+            case "model.Medicine":
+                MedicineView mv = new MedicineView(this.session);
+                mv.setVisible(true);
+                break;
+            case "model.Country":
+                CountryView cv = new CountryView(this.session);
+                cv.setVisible(true);
+                break;
+        }
     }
 
     private void editEntity() {

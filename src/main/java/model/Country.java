@@ -8,7 +8,8 @@ import java.util.List;
 public class Country {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "contry_id_seq")
     private int id;
 
     @Column(name = "Name")
@@ -18,6 +19,10 @@ public class Country {
     private List<Sportsman> sportsmans;
 
     public Country() {}
+
+    public Country(String name) {
+        this.name = name;
+    }
 
     public int getId() {
         return id;
@@ -45,8 +50,6 @@ public class Country {
 
     @Override
     public String toString() {
-        return "models.Country{" +
-                "Name = " + name +
-                '}';
+        return name;
     }
 }

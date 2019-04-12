@@ -8,7 +8,8 @@ import java.util.List;
 public class Result {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "result_id_seq")
     private int id;
 
     @Column(name = "place")
@@ -29,6 +30,13 @@ public class Result {
     private List<Sportsman> sportsmans;
 
     public Result() {}
+
+    public Result(int place, int year, int record, Discipline discipline) {
+        this.place = place;
+        this.year = year;
+        this.record = record;
+        this.discipline = discipline;
+    }
 
     public int getId() {
         return id;
@@ -80,8 +88,6 @@ public class Result {
 
     @Override
     public String toString() {
-        return "models.Result{" +
-                "place = " + place +
-                '}';
+        return place + " in " + discipline.getName();
     }
 }

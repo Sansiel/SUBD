@@ -7,7 +7,8 @@ import javax.persistence.*;
 public class Sportsman {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "sportsman_id_seq")
     private int id;
 
     @Column(name = "FName")
@@ -38,6 +39,17 @@ public class Sportsman {
     private Medicine medicine;
 
     public Sportsman() {}
+
+    public Sportsman(String fname, String mname, String lname, int age, int weight, Result result, Country country, Medicine medicine) {
+        this.fname = fname;
+        this.mname = mname;
+        this.lname = lname;
+        this.age = age;
+        this.weight = weight;
+        this.result = result;
+        this.country = country;
+        this.medicine = medicine;
+    }
 
     public int getId() {
         return id;

@@ -8,7 +8,8 @@ import java.util.List;
 public class Discipline {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "discipline_id_seq")
     private int id;
 
     @Column(name = "Name")
@@ -18,6 +19,10 @@ public class Discipline {
     private List<Result> result;
 
     public Discipline() {}
+
+    public Discipline(String name) {
+        this.name = name;
+    }
 
     public int getId() {
         return id;
@@ -45,8 +50,6 @@ public class Discipline {
 
     @Override
     public String toString() {
-        return "models.Discipline{" +
-                "Name = " + name +
-                '}';
+        return name;
     }
 }

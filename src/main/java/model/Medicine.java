@@ -8,7 +8,8 @@ import java.util.List;
 public class Medicine {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "medicine_id_seq")
     private int id;
 
     @Column(name = "GroupBlood")
@@ -18,6 +19,10 @@ public class Medicine {
     private List<Sportsman> sportsmans;
 
     public Medicine() {}
+
+    public Medicine(String name) {
+        this.name = name;
+    }
 
     public int getId() {
         return id;
@@ -45,8 +50,6 @@ public class Medicine {
 
     @Override
     public String toString() {
-        return "models.Medicine{" +
-                "GroupBlood = " + name +
-                '}';
+        return name;
     }
 }
