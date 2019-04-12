@@ -39,31 +39,34 @@ public class SportsmanView extends JFrame {
 
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
-            Transaction tx1 = session.beginTransaction();
-            if (s == null) {
-                s = new Sportsman(
-                        textFName.getText(),
-                        textMName.getText(),
-                        textLName.getText(),
-                        Integer.parseInt(textAge.getText()),
-                        Integer.parseInt(textWeight.getText()),
-                        (Result) spinnerResult.getValue(),
-                        (Country) spinnerCountry.getValue(),
-                        (Medicine) spinnerMedicine.getValue()
-                );
-            } else {
-                s.setFname(textFName.getText());
-                s.setMname(textMName.getText());
-                s.setLname(textLName.getText());
-                s.setAge(Integer.parseInt(textAge.getText()));
-                s.setWeight(Integer.parseInt(textWeight.getText()));
-                s.setResult((Result) spinnerResult.getValue());
-                s.setCountry((Country) spinnerCountry.getValue());
-                s.setMedicine((Medicine) spinnerMedicine.getValue());
+            try {
+                if (s == null) {
+                    s = new Sportsman(
+                            textFName.getText(),
+                            textMName.getText(),
+                            textLName.getText(),
+                            Integer.parseInt(textAge.getText()),
+                            Integer.parseInt(textWeight.getText()),
+                            (Result) spinnerResult.getValue(),
+                            (Country) spinnerCountry.getValue(),
+                            (Medicine) spinnerMedicine.getValue()
+                    );
+                } else {
+                    s.setFname(textFName.getText());
+                    s.setMname(textMName.getText());
+                    s.setLname(textLName.getText());
+                    s.setAge(Integer.parseInt(textAge.getText()));
+                    s.setWeight(Integer.parseInt(textWeight.getText()));
+                    s.setResult((Result) spinnerResult.getValue());
+                    s.setCountry((Country) spinnerCountry.getValue());
+                    s.setMedicine((Medicine) spinnerMedicine.getValue());
+                }
+                session.saveOrUpdate(s);
+                dispose();
+            } catch(NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "В поле Age или Weight не число!\n" + ex, "Ошибка!", JOptionPane.ERROR_MESSAGE);
+
             }
-            session.saveOrUpdate(s);
-            tx1.commit();
-            dispose();
         });
         btnOk.setBounds(80, 293, 97, 25);
         frame.getContentPane().add(btnOk);
@@ -75,26 +78,31 @@ public class SportsmanView extends JFrame {
 
         textFName = new JTextField();
         textFName.setBounds(110, 13, 116, 22);
+        if (s != null) textFName.setText(s.getFname());
         frame.getContentPane().add(textFName);
         textFName.setColumns(10);
 
         textMName = new JTextField();
         textMName.setBounds(110, 48, 116, 22);
+        if (s != null) textMName.setText(s.getMname());
         frame.getContentPane().add(textMName);
         textMName.setColumns(10);
 
         textLName = new JTextField();
         textLName.setBounds(110, 83, 116, 22);
+        if (s != null) textLName.setText(s.getLname());
         frame.getContentPane().add(textLName);
         textLName.setColumns(10);
 
         textAge = new JTextField();
         textAge.setBounds(110, 118, 116, 22);
+        if (s != null) textAge.setText("" + s.getAge());
         frame.getContentPane().add(textAge);
         textAge.setColumns(10);
 
         textWeight = new JTextField();
         textWeight.setBounds(110, 153, 116, 22);
+        if (s != null) textWeight.setText("" + s.getWeight());
         frame.getContentPane().add(textWeight);
         textWeight.setColumns(10);
 

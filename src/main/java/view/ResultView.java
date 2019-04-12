@@ -36,22 +36,28 @@ public class ResultView extends JFrame {
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
             Transaction tx1 = session.beginTransaction();
-            if (r == null) {
-                r = new Result(
-                        Integer.parseInt(textPlace.getText()),
-                        Integer.parseInt(textYear.getText()),
-                        Integer.parseInt(textRecord.getText()),
-                        (Discipline) spinner.getValue()
-                        );
-            } else {
-                r.setPlace(Integer.parseInt(textPlace.getText()));
-                r.setYear(Integer.parseInt(textYear.getText()));
-                r.setRecord(Integer.parseInt(textRecord.getText()));
-                r.setDiscipline((Discipline) spinner.getValue());
+            try {
+                if (r == null) {
+                    r = new Result(
+                            Integer.parseInt(textPlace.getText()),
+                            Integer.parseInt(textYear.getText()),
+                            Integer.parseInt(textRecord.getText()),
+                            (Discipline) spinner.getValue()
+                    );
+                } else {
+                    r.setPlace(Integer.parseInt(textPlace.getText()));
+                    r.setYear(Integer.parseInt(textYear.getText()));
+                    r.setRecord(Integer.parseInt(textRecord.getText()));
+                    r.setDiscipline((Discipline) spinner.getValue());
+                }
+                session.saveOrUpdate(r);
+
+                tx1.commit();
+                dispose();
+            } catch(NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "В поле Place, Year или Record не число!\n" + ex, "Ошибка!", JOptionPane.ERROR_MESSAGE);
+                tx1.commit();
             }
-            session.saveOrUpdate(r);
-            tx1.commit();
-            dispose();
         });
         btnOk.setBounds(80, 177, 97, 25);
         frame.getContentPane().add(btnOk);
@@ -67,6 +73,7 @@ public class ResultView extends JFrame {
 
         textRecord = new JTextField();
         textRecord.setBounds(80, 80, 116, 22);
+        if (r != null) textRecord.setText("" + r.getRecord());
         frame.getContentPane().add(textRecord);
         textRecord.setColumns(10);
 
@@ -76,6 +83,7 @@ public class ResultView extends JFrame {
 
         textPlace = new JTextField();
         textPlace.setBounds(80, 10, 116, 22);
+        if (r != null) textPlace.setText("" + r.getPlace());
         frame.getContentPane().add(textPlace);
         textPlace.setColumns(10);
 
@@ -85,6 +93,7 @@ public class ResultView extends JFrame {
 
         textYear = new JTextField();
         textYear.setBounds(80, 45, 116, 22);
+        if (r != null) textYear.setText("" + r.getYear());
         frame.getContentPane().add(textYear);
         textYear.setColumns(10);
 
