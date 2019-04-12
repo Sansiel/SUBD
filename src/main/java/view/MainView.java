@@ -19,6 +19,7 @@ public class MainView {
     private ConnectionInfo connectionInfo;
     private Session session;
     private Class currentEntity;
+    private EntityView currentEntityView;
 
     public MainView() {
         this.connectionInfo = null;

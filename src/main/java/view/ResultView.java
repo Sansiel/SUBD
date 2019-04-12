@@ -7,7 +7,7 @@ import org.hibernate.Transaction;
 import javax.swing.*;
 import java.awt.*;
 
-public class ResultView extends JFrame {
+public class ResultView extends JFrame implements EntityView {
     private final Session session;
     private Result r;
 
