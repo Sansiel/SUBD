@@ -119,21 +119,21 @@ public class MainView {
 
             JButton deleteButton = new JButton("Удалить запись");
             deleteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            deleteButton.addActionListener(event -> this.deleteEntity());
+            deleteButton.addActionListener(event -> this.deleteEntity(this.currentEntity));
             buttonsPanel.add(deleteButton);
 
-//            JButton restoreButton = new JButton("Восстановить запись");
-//            restoreButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-//            restoreButton.addActionListener(event -> this.setDeletedEntity(false));
-//            buttonsPanel.add(restoreButton);
-//
-//            JButton totalDeleteButton = new JButton("Полностью удалить запись");
-//            totalDeleteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-//            totalDeleteButton.addActionListener(event -> this.deleteEntity());
-//            buttonsPanel.add(totalDeleteButton);
+            JButton refreshButton = new JButton("Обновить таблицу");
+            refreshButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            refreshButton.addActionListener(event -> this.refreshTable());
+            buttonsPanel.add(refreshButton);
+
         }
 
         this.frame.getContentPane().add(buttonsPanel, BorderLayout.EAST);
+    }
+
+    private void refreshTable() {
+        if (this.currentEntity != null) this.openTable(this.currentEntity);
     }
 
     private void connect() {
@@ -192,55 +192,55 @@ public class MainView {
     }
 
     private void addEntity() throws Exception {
-        /*if (!this.tryConnect() || this.currentEntity == null) {
-            return;
-        }
-
-        IModel model = null;
-        try {
-            model = (IModel) this.currentEntity.newInstance();
-        } catch (Exception ex) {
-            return;
-        }
-
-        EntityDialog entityDialog = new EntityDialog(this.frame, model, this.session);
-        entityDialog.setVisible(true);
-        if (entityDialog.isAccepted()) {
-            model = entityDialog.getEntity();
-            Transaction transaction = null;
-            try {
-                transaction = session.beginTransaction();
-                String id = UUID.randomUUID().toString();
-                model.setId(id);
-                this.session.saveOrUpdate(model);
-
-                Object[] objects = model.getColumns();
-                Class[] objectsClasses = model.getColumnsTypes();
-                Class[] objectsSubTargetClasses = model.getSubColumnsTargetTypes();
-                for (int objectIndex = 0; objectIndex < objects.length; objectIndex++) {
-                    if (IModel.class.isAssignableFrom(objectsClasses[objectIndex])) {
-                        IModel subModel = (IModel) objects[objectIndex];
-                        subModel.setParentId(id);
-                        this.session.saveOrUpdate(subModel);
-                    } else if (Collection.class.isAssignableFrom(objectsClasses[objectIndex]) && IModel.class.isAssignableFrom(objectsSubTargetClasses[objectIndex])) {
-                        for (Object object : (Collection<?>) objects[objectIndex]) {
-                            IModel subModel = (IModel) object;
-                            subModel.setParentId(id);
-                            this.session.saveOrUpdate(subModel);
-                        }
-                    }
-                }
-
-                transaction.commit();
-            } catch (HibernateException ex) {
-                if (transaction != null) {
-                    transaction.rollback();
-                    JOptionPane.showMessageDialog(this.frame, ex, "Ошибка при выполнении транзакции", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
-
-        this.openTable(this.currentEntity);*/
+//        if (!this.tryConnect() || this.currentEntity == null) {
+//            return;
+//        }
+//
+//        IModel model = null;
+//        try {
+//            model = (IModel) this.currentEntity.newInstance();
+//        } catch (Exception ex) {
+//            return;
+//        }
+//
+//        EntityDialog entityDialog = new EntityDialog(this.frame, model, this.session);
+//        entityDialog.setVisible(true);
+//        if (entityDialog.isAccepted()) {
+//            model = entityDialog.getEntity();
+//            Transaction transaction = null;
+//            try {
+//                transaction = session.beginTransaction();
+//                String id = UUID.randomUUID().toString();
+//                model.setId(id);
+//                this.session.saveOrUpdate(model);
+//
+//                Object[] objects = model.getColumns();
+//                Class[] objectsClasses = model.getColumnsTypes();
+//                Class[] objectsSubTargetClasses = model.getSubColumnsTargetTypes();
+//                for (int objectIndex = 0; objectIndex < objects.length; objectIndex++) {
+//                    if (IModel.class.isAssignableFrom(objectsClasses[objectIndex])) {
+//                        IModel subModel = (IModel) objects[objectIndex];
+//                        subModel.setParentId(id);
+//                        this.session.saveOrUpdate(subModel);
+//                    } else if (Collection.class.isAssignableFrom(objectsClasses[objectIndex]) && IModel.class.isAssignableFrom(objectsSubTargetClasses[objectIndex])) {
+//                        for (Object object : (Collection<?>) objects[objectIndex]) {
+//                            IModel subModel = (IModel) object;
+//                            subModel.setParentId(id);
+//                            this.session.saveOrUpdate(subModel);
+//                        }
+//                    }
+//                }
+//
+//                transaction.commit();
+//            } catch (HibernateException ex) {
+//                if (transaction != null) {
+//                    transaction.rollback();
+//                    JOptionPane.showMessageDialog(this.frame, ex, "Ошибка при выполнении транзакции", JOptionPane.ERROR_MESSAGE);
+//                }
+//            }
+//        }
+//
+//        this.openTable(this.currentEntity);
         if (this.currentEntity == null) throw new Exception("no");
 
         switch (this.currentEntity.getName()) {
@@ -347,13 +347,13 @@ public class MainView {
 //        this.openTable(this.currentEntity);
 //    }
 
-    private void deleteEntity() {
+    private <T> void deleteEntity(Class<T> c) {
         if (!this.tryConnect() || this.table == null || this.table.getModel().getRowCount() <= 0 || this.table.getSelectedRow() == -1) {
             return;
         }
 
         view.TableModel tableModel = (view.TableModel) this.table.getModel();
-        Object model = tableModel.getEntity(this.table.getSelectedRow());
+        T model = c.cast(tableModel.getEntity(this.table.getSelectedRow()));
 
         Transaction transaction = null;
         try {
