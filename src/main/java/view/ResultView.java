@@ -5,9 +5,12 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class ResultView extends JFrame {
     private final Session session;
+    private Result r;
+
     private JTextField textRecord;
     private JTextField textPlace;
     private JTextField textYear;
@@ -15,6 +18,16 @@ public class ResultView extends JFrame {
 
     public ResultView(Session session) {
         this.session = session;
+        initialize();
+    }
+
+    public ResultView(Session session, Result r) throws HeadlessException {
+        this.session = session;
+        this.r = r;
+        initialize();
+    }
+
+    public void initialize() {
         JFrame frame = this;
         frame.setBounds(100, 100, 316, 262);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -23,12 +36,20 @@ public class ResultView extends JFrame {
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
             Transaction tx1 = session.beginTransaction();
-            session.save(new Result(
-                    Integer.parseInt(textPlace.getText()),
-                    Integer.parseInt(textYear.getText()),
-                    Integer.parseInt(textRecord.getText()),
-                    (Discipline) spinner.getValue()
-            ));
+            if (r == null) {
+                r = new Result(
+                        Integer.parseInt(textPlace.getText()),
+                        Integer.parseInt(textYear.getText()),
+                        Integer.parseInt(textRecord.getText()),
+                        (Discipline) spinner.getValue()
+                        );
+            } else {
+                r.setPlace(Integer.parseInt(textPlace.getText()));
+                r.setYear(Integer.parseInt(textYear.getText()));
+                r.setRecord(Integer.parseInt(textRecord.getText()));
+                r.setDiscipline((Discipline) spinner.getValue());
+            }
+            session.saveOrUpdate(r);
             tx1.commit();
             dispose();
         });

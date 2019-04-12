@@ -5,12 +5,24 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class DisciplineView extends JFrame {
-    private final Session session;
+    private Session session;
+    private Discipline d;
 
     public DisciplineView(Session session) {
         this.session = session;
+        initialize();
+    }
+
+    public DisciplineView(Session session, Discipline d) {
+        this.session = session;
+        this.d = d;
+        initialize();
+    }
+
+    private void initialize(){
         JFrame frame = this;
         frame.setBounds(100, 100, 347, 132);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -28,7 +40,12 @@ public class DisciplineView extends JFrame {
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
             Transaction tx1 = session.beginTransaction();
-            session.save(new Discipline(textName.getText()));
+            if (d == null) {
+                d = new Discipline(textName.getText());
+            } else {
+                d.setName(textName.getText());
+            }
+            session.saveOrUpdate(d);
             tx1.commit();
             dispose();
         });
@@ -40,4 +57,6 @@ public class DisciplineView extends JFrame {
         btnCancel.setBounds(220, 47, 97, 25);
         frame.getContentPane().add(btnCancel);
     }
+
+
 }

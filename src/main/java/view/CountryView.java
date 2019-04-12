@@ -5,12 +5,24 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class CountryView extends JFrame {
     private final Session session;
+    private Country c;
 
     public CountryView(Session session) {
         this.session = session;
+        initialize();
+    }
+
+    public CountryView(Session session, Country c) throws HeadlessException {
+        this.session = session;
+        this.c = c;
+        initialize();
+    }
+
+    private void initialize(){
         JFrame frame = this;
         frame.setBounds(100, 100, 347, 132);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -28,7 +40,12 @@ public class CountryView extends JFrame {
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
             Transaction tx1 = session.beginTransaction();
-            session.save(new Country(textName.getText()));
+            if (c == null) {
+                c = new Country(textName.getText());
+            } else {
+                c.setName(textName.getText());
+            }
+            session.saveOrUpdate(c);
             tx1.commit();
             dispose();
         });

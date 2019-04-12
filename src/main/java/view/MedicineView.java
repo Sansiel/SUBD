@@ -5,12 +5,24 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class MedicineView extends JFrame {
     private final Session session;
+    private Medicine m;
 
-    public MedicineView(Session session) {
+    public MedicineView(Session session) throws HeadlessException {
         this.session = session;
+        initialize();
+    }
+
+    public MedicineView(Session session, Medicine m) throws HeadlessException {
+        this.session = session;
+        this.m = m;
+        initialize();
+    }
+
+    private void initialize(){
         JFrame frame = this;
         frame.setBounds(100, 100, 347, 132);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -28,7 +40,12 @@ public class MedicineView extends JFrame {
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
             Transaction tx1 = session.beginTransaction();
-            session.save(new Medicine(textName.getText()));
+            if (m == null) {
+                m = new Medicine(textName.getText());
+            } else {
+                m.setName(textName.getText());
+            }
+            session.saveOrUpdate(m);
             tx1.commit();
             dispose();
         });

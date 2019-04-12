@@ -5,9 +5,12 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class SportsmanView extends JFrame {
     private final Session session;
+    private Sportsman s;
+
     private JTextField textFName;
     private JTextField textMName;
     private JTextField textLName;
@@ -17,8 +20,18 @@ public class SportsmanView extends JFrame {
     private JSpinner spinnerCountry;
     private JSpinner spinnerMedicine;
 
+    public SportsmanView(Session session, Sportsman s) {
+        this.session = session;
+        this.s = s;
+        initialize();
+    }
+
     public SportsmanView(Session session) {
         this.session = session;
+        initialize();
+    }
+
+    public void initialize() {
         JFrame frame = this;
         frame.setBounds(100, 100, 316, 380);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -27,16 +40,28 @@ public class SportsmanView extends JFrame {
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
             Transaction tx1 = session.beginTransaction();
-            session.save(new Sportsman(
-                    textFName.getText(),
-                    textMName.getText(),
-                    textLName.getText(),
-                    Integer.parseInt(textAge.getText()),
-                    Integer.parseInt(textWeight.getText()),
-                    (Result) spinnerResult.getValue(),
-                    (Country) spinnerCountry.getValue(),
-                    (Medicine) spinnerMedicine.getValue()
-            ));
+            if (s == null) {
+                s = new Sportsman(
+                        textFName.getText(),
+                        textMName.getText(),
+                        textLName.getText(),
+                        Integer.parseInt(textAge.getText()),
+                        Integer.parseInt(textWeight.getText()),
+                        (Result) spinnerResult.getValue(),
+                        (Country) spinnerCountry.getValue(),
+                        (Medicine) spinnerMedicine.getValue()
+                );
+            } else {
+                s.setFname(textFName.getText());
+                s.setMname(textMName.getText());
+                s.setLname(textLName.getText());
+                s.setAge(Integer.parseInt(textAge.getText()));
+                s.setWeight(Integer.parseInt(textWeight.getText()));
+                s.setResult((Result) spinnerResult.getValue());
+                s.setCountry((Country) spinnerCountry.getValue());
+                s.setMedicine((Medicine) spinnerMedicine.getValue());
+            }
+            session.saveOrUpdate(s);
             tx1.commit();
             dispose();
         });

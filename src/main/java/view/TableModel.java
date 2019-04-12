@@ -4,23 +4,22 @@ import model.*;
 
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class TableModel<T> extends DefaultTableModel {
-    private ArrayList<T> models;
+    private ArrayList<T> entities;
     private Class<T> type;
 
-    public TableModel(ArrayList<T> models) {
-        this.models = models;
-        this.type = (Class<T>) models.get(0).getClass();
+    public TableModel(ArrayList<T> entities) {
+        this.entities = entities;
+        this.type = (Class<T>) entities.get(0).getClass();
 
         String[] columnsNames = new String[0];
         ArrayList<Object[]> rows = new ArrayList<>();
 
         switch (type.getName()) {
             case "model.Sportsman":
-                rows = (ArrayList<Object[]>) ((ArrayList<Sportsman>) this.models).stream()
+                rows = (ArrayList<Object[]>) ((ArrayList<Sportsman>) this.entities).stream()
                         .map(e -> new Object[]{
                                 "" + e.getId(),
                                 e.getFname(),
@@ -36,7 +35,7 @@ public class TableModel<T> extends DefaultTableModel {
                 this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "fname", "lname", "mname", "age", "weight", "ResultPlace", "CountryName", "MedicineName"});
                 break;
             case "model.Discipline":
-                rows = (ArrayList<Object[]>) ((ArrayList<Discipline>) this.models).stream()
+                rows = (ArrayList<Object[]>) ((ArrayList<Discipline>) this.entities).stream()
                         .map(e -> new Object[]{
                                 "" + e.getId(),
                                 e.getName()
@@ -45,18 +44,19 @@ public class TableModel<T> extends DefaultTableModel {
                 this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name"});
                 break;
             case "model.Result":
-                rows = (ArrayList<Object[]>) ((ArrayList<Result>) this.models).stream()
+                rows = (ArrayList<Object[]>) ((ArrayList<Result>) this.entities).stream()
                         .map(e -> new Object[]{
+                                "" + e.getId(),
                                 "" + e.getPlace(),
                                 "" + e.getYear(),
                                 "" + e.getRecord(),
                                 e.getDiscipline().getName()
                         })
                         .collect(Collectors.toList());
-                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"place", "year", "record", "DisciplineName"});
+                this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "place", "year", "record", "DisciplineName"});
                 break;
             case "model.Medicine":
-                rows = (ArrayList<Object[]>) ((ArrayList<Medicine>) this.models).stream()
+                rows = (ArrayList<Object[]>) ((ArrayList<Medicine>) this.entities).stream()
                         .map(e -> new Object[]{
                                 "" + e.getId(),
                                 e.getName()
@@ -65,7 +65,7 @@ public class TableModel<T> extends DefaultTableModel {
                 this.setDataVector(rows.toArray(new Object[0][]), new Object[]{"id", "name"});
                 break;
             case "model.Country":
-                rows = (ArrayList<Object[]>) ((ArrayList<Country>) this.models).stream()
+                rows = (ArrayList<Object[]>) ((ArrayList<Country>) this.entities).stream()
                         .map(e -> new Object[]{
                                 "" + e.getId(),
                                 e.getName()
@@ -75,7 +75,7 @@ public class TableModel<T> extends DefaultTableModel {
                 break;
         }
 
-//        for (T model : this.models) {
+//        for (T model : this.entities) {
 //            columnsNames = model.getColumnsNames();
 //
 //            Object[] columns = model.getColumns();
@@ -111,68 +111,68 @@ public class TableModel<T> extends DefaultTableModel {
 
     }
 
-//    public T getModel(int index) {
-//        return this.models.get(index);
-//    }
-
-    public IModel getModel(int index) {
-        return new IModel() {
-            @Override
-            public String getModelName() {
-                return null;
-            }
-
-            @Override
-            public String getModelPluralName() {
-                return null;
-            }
-
-            @Override
-            public String[] getColumnsNames() {
-                return new String[0];
-            }
-
-            @Override
-            public Object[] getColumns() {
-                return new Object[0];
-            }
-
-            @Override
-            public Class[] getColumnsTypes() {
-                return new Class[0];
-            }
-
-            @Override
-            public Class[] getSubColumnsTypes() {
-                return new Class[0];
-            }
-
-            @Override
-            public Class[] getSubColumnsTargetTypes() {
-                return new Class[0];
-            }
-
-            @Override
-            public void setColumns(Object[] objects) {
-
-            }
-
-            @Override
-            public void setId(String id) {
-
-            }
-
-            @Override
-            public void setParentId(String id) {
-
-            }
-
-            @Override
-            public void setDeleted(boolean deleted) {
-
-            }
-        };
+    public T getEntity(int index) {
+        return this.entities.get(index);
     }
+
+//    public IModel getEntity(int index) {
+//        return new IModel() {
+//            @Override
+//            public String getModelName() {
+//                return null;
+//            }
+//
+//            @Override
+//            public String getModelPluralName() {
+//                return null;
+//            }
+//
+//            @Override
+//            public String[] getColumnsNames() {
+//                return new String[0];
+//            }
+//
+//            @Override
+//            public Object[] getColumns() {
+//                return new Object[0];
+//            }
+//
+//            @Override
+//            public Class[] getColumnsTypes() {
+//                return new Class[0];
+//            }
+//
+//            @Override
+//            public Class[] getSubColumnsTypes() {
+//                return new Class[0];
+//            }
+//
+//            @Override
+//            public Class[] getSubColumnsTargetTypes() {
+//                return new Class[0];
+//            }
+//
+//            @Override
+//            public void setColumns(Object[] objects) {
+//
+//            }
+//
+//            @Override
+//            public void setId(String id) {
+//
+//            }
+//
+//            @Override
+//            public void setParentId(String id) {
+//
+//            }
+//
+//            @Override
+//            public void setDeleted(boolean deleted) {
+//
+//            }
+//        };
+//    }
 
     @Override
     public boolean isCellEditable(int row, int col) {

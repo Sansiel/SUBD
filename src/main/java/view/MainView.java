@@ -3,14 +3,11 @@ package view;
 import database.ConnectionInfo;
 import model.*;
 import org.hibernate.*;
-import org.hibernate.query.Query;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class MainView {
@@ -111,23 +108,29 @@ public class MainView {
 
             JButton editButton = new JButton("Изменить запись");
             editButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            editButton.addActionListener(event -> this.editEntity());
+            editButton.addActionListener(event -> {
+                try {
+                    this.editEntity();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
             buttonsPanel.add(editButton);
 
             JButton deleteButton = new JButton("Удалить запись");
             deleteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            deleteButton.addActionListener(event -> this.setDeletedEntity(true));
+            deleteButton.addActionListener(event -> this.deleteEntity());
             buttonsPanel.add(deleteButton);
 
-            JButton restoreButton = new JButton("Восстановить запись");
-            restoreButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            restoreButton.addActionListener(event -> this.setDeletedEntity(false));
-            buttonsPanel.add(restoreButton);
-
-            JButton totalDeleteButton = new JButton("Полностью удалить запись");
-            totalDeleteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            totalDeleteButton.addActionListener(event -> this.deleteEntity());
-            buttonsPanel.add(totalDeleteButton);
+//            JButton restoreButton = new JButton("Восстановить запись");
+//            restoreButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+//            restoreButton.addActionListener(event -> this.setDeletedEntity(false));
+//            buttonsPanel.add(restoreButton);
+//
+//            JButton totalDeleteButton = new JButton("Полностью удалить запись");
+//            totalDeleteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+//            totalDeleteButton.addActionListener(event -> this.deleteEntity());
+//            buttonsPanel.add(totalDeleteButton);
         }
 
         this.frame.getContentPane().add(buttonsPanel, BorderLayout.EAST);
@@ -203,7 +206,7 @@ public class MainView {
         EntityDialog entityDialog = new EntityDialog(this.frame, model, this.session);
         entityDialog.setVisible(true);
         if (entityDialog.isAccepted()) {
-            model = entityDialog.getModel();
+            model = entityDialog.getEntity();
             Transaction transaction = null;
             try {
                 transaction = session.beginTransaction();
@@ -264,56 +267,85 @@ public class MainView {
         }
     }
 
-    private void editEntity() {
-        if (!this.tryConnect() || this.table == null || this.table.getModel().getRowCount() <= 0 || this.table.getSelectedRow() == -1) {
-            return;
-        }
+    private void editEntity() throws Exception {
+//        if (!this.tryConnect() || this.table == null || this.table.getEntity().getRowCount() <= 0 || this.table.getSelectedRow() == -1) {
+//            return;
+//        }
+//
+//        view.TableModel tableModel = (view.TableModel) this.table.getEntity();
+//        IModel model = tableModel.getEntity(this.table.getSelectedRow());
+//        EntityDialog entityDialog = new EntityDialog(this.frame, model, this.session);
+//        entityDialog.setVisible(true);
+//        if (entityDialog.isAccepted()) {
+//            model = entityDialog.getEntity();
+//            Transaction transaction = null;
+//            try {
+//                transaction = session.beginTransaction();
+//                this.session.saveOrUpdate(model);
+//                transaction.commit();
+//            } catch (HibernateException ex) {
+//                if (transaction != null) {
+//                    transaction.rollback();
+//                    JOptionPane.showMessageDialog(this.frame, ex, "Ошибка при выполнении транзакции", JOptionPane.ERROR_MESSAGE);
+//                }
+//            }
+//        }
+//
+//        this.openTable(this.currentEntity);
+        if (this.currentEntity == null) throw new Exception("no");
 
-        view.TableModel tableModel = (view.TableModel) this.table.getModel();
-        IModel model = tableModel.getModel(this.table.getSelectedRow());
-        EntityDialog entityDialog = new EntityDialog(this.frame, model, this.session);
-        entityDialog.setVisible(true);
-        if (entityDialog.isAccepted()) {
-            model = entityDialog.getModel();
-            Transaction transaction = null;
-            try {
-                transaction = session.beginTransaction();
-                this.session.saveOrUpdate(model);
-                transaction.commit();
-            } catch (HibernateException ex) {
-                if (transaction != null) {
-                    transaction.rollback();
-                    JOptionPane.showMessageDialog(this.frame, ex, "Ошибка при выполнении транзакции", JOptionPane.ERROR_MESSAGE);
-                }
-            }
+        switch (this.currentEntity.getName()) {
+            case "model.Sportsman":
+                Sportsman s = (Sportsman) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
+                SportsmanView sv = new SportsmanView(this.session, s);
+                sv.setVisible(true);
+                break;
+            case "model.Discipline":
+                Discipline d = (Discipline) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
+                DisciplineView dv = new DisciplineView(this.session, d);
+                dv.setVisible(true);
+                break;
+            case "model.Result":
+                Result r = (Result) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
+                ResultView rv = new ResultView(this.session, r);
+                rv.setVisible(true);
+                break;
+            case "model.Medicine":
+                Medicine m = (Medicine) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
+                MedicineView mv = new MedicineView(this.session, m);
+                mv.setVisible(true);
+                break;
+            case "model.Country":
+                Country c = (Country) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
+                CountryView cv = new CountryView(this.session, c);
+                cv.setVisible(true);
+                break;
         }
-
-        this.openTable(this.currentEntity);
     }
-
-    private void setDeletedEntity(boolean deleted) {
-        if (!this.tryConnect() || this.table == null || this.table.getModel().getRowCount() <= 0 || this.table.getSelectedRow() == -1) {
-            return;
-        }
-
-        view.TableModel tableModel = (view.TableModel) this.table.getModel();
-        IModel model = tableModel.getModel(this.table.getSelectedRow());
-
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            model.setDeleted(deleted);
-            this.session.saveOrUpdate(model);
-            transaction.commit();
-        } catch (HibernateException ex) {
-            if (transaction != null) {
-                transaction.rollback();
-                JOptionPane.showMessageDialog(this.frame, ex, "Ошибка при выполнении транзакции", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-
-        this.openTable(this.currentEntity);
-    }
+//
+//    private void setDeletedEntity(boolean deleted) {
+//        if (!this.tryConnect() || this.table == null || this.table.getModel().getRowCount() <= 0 || this.table.getSelectedRow() == -1) {
+//            return;
+//        }
+//
+//        view.TableModel tableModel = (view.TableModel) this.table.getModel();
+//        IModel model = tableModel.getEntity(this.table.getSelectedRow());
+//
+//        Transaction transaction = null;
+//        try {
+//            transaction = session.beginTransaction();
+//            model.setDeleted(deleted);
+//            this.session.saveOrUpdate(model);
+//            transaction.commit();
+//        } catch (HibernateException ex) {
+//            if (transaction != null) {
+//                transaction.rollback();
+//                JOptionPane.showMessageDialog(this.frame, ex, "Ошибка при выполнении транзакции", JOptionPane.ERROR_MESSAGE);
+//            }
+//        }
+//
+//        this.openTable(this.currentEntity);
+//    }
 
     private void deleteEntity() {
         if (!this.tryConnect() || this.table == null || this.table.getModel().getRowCount() <= 0 || this.table.getSelectedRow() == -1) {
@@ -321,7 +353,7 @@ public class MainView {
         }
 
         view.TableModel tableModel = (view.TableModel) this.table.getModel();
-        IModel model = tableModel.getModel(this.table.getSelectedRow());
+        Object model = tableModel.getEntity(this.table.getSelectedRow());
 
         Transaction transaction = null;
         try {
