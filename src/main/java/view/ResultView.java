@@ -7,28 +7,36 @@ import org.hibernate.Transaction;
 import javax.swing.*;
 import java.awt.*;
 
-public class ResultView extends JFrame implements EntityView {
-    private final Session session;
-    private Result r;
+public class ResultView implements EntityView<Result> {
+    private Session session;
+    private Result model;
+    private JFrame frame;
 
     private JTextField textRecord;
     private JTextField textPlace;
     private JTextField textYear;
     private JSpinner spinner;
 
-    public ResultView(Session session) {
-        this.session = session;
-        initialize();
+    public Session getSession() {
+        return session;
     }
 
-    public ResultView(Session session, Result r) throws HeadlessException {
+    @Override
+    public void setSession(Session session) {
         this.session = session;
-        this.r = r;
-        initialize();
     }
 
-    public void initialize() {
-        JFrame frame = this;
+    public Result getModel() {
+        return model;
+    }
+
+    @Override
+    public void setModel(Result model) {
+        this.model = model;
+    }
+
+    public void invoke() {
+        frame = new JFrame();
         frame.setBounds(100, 100, 316, 262);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
@@ -37,25 +45,25 @@ public class ResultView extends JFrame implements EntityView {
         btnOk.addActionListener(e -> {
             Transaction tx1 = session.beginTransaction();
             try {
-                if (r == null) {
-                    r = new Result(
+                if (model == null) {
+                    model = new Result(
                             Integer.parseInt(textPlace.getText()),
                             Integer.parseInt(textYear.getText()),
                             Integer.parseInt(textRecord.getText()),
                             (Discipline) spinner.getValue()
                     );
                 } else {
-                    r.setPlace(Integer.parseInt(textPlace.getText()));
-                    r.setYear(Integer.parseInt(textYear.getText()));
-                    r.setRecord(Integer.parseInt(textRecord.getText()));
-                    r.setDiscipline((Discipline) spinner.getValue());
+                    model.setPlace(Integer.parseInt(textPlace.getText()));
+                    model.setYear(Integer.parseInt(textYear.getText()));
+                    model.setRecord(Integer.parseInt(textRecord.getText()));
+                    model.setDiscipline((Discipline) spinner.getValue());
                 }
-                session.saveOrUpdate(r);
+                session.saveOrUpdate(model);
 
                 tx1.commit();
-                dispose();
+                frame.dispose();
             } catch(NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "В поле Place, Year или Record не число!\n" + ex, "Ошибка!", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this.frame, "В поле Place, Year или Record не число!\n" + ex, "Ошибка!", JOptionPane.ERROR_MESSAGE);
                 tx1.commit();
             }
         });
@@ -63,7 +71,7 @@ public class ResultView extends JFrame implements EntityView {
         frame.getContentPane().add(btnOk);
 
         JButton btnCancel = new JButton("Cancel");
-        btnCancel.addActionListener(e -> dispose());
+        btnCancel.addActionListener(e -> frame.dispose());
         btnCancel.setBounds(189, 177, 97, 25);
         frame.getContentPane().add(btnCancel);
 
@@ -73,7 +81,7 @@ public class ResultView extends JFrame implements EntityView {
 
         textRecord = new JTextField();
         textRecord.setBounds(80, 80, 116, 22);
-        if (r != null) textRecord.setText("" + r.getRecord());
+        if (model != null) textRecord.setText("" + model.getRecord());
         frame.getContentPane().add(textRecord);
         textRecord.setColumns(10);
 
@@ -83,7 +91,7 @@ public class ResultView extends JFrame implements EntityView {
 
         textPlace = new JTextField();
         textPlace.setBounds(80, 10, 116, 22);
-        if (r != null) textPlace.setText("" + r.getPlace());
+        if (model != null) textPlace.setText("" + model.getPlace());
         frame.getContentPane().add(textPlace);
         textPlace.setColumns(10);
 
@@ -93,7 +101,7 @@ public class ResultView extends JFrame implements EntityView {
 
         textYear = new JTextField();
         textYear.setBounds(80, 45, 116, 22);
-        if (r != null) textYear.setText("" + r.getYear());
+        if (model != null) textYear.setText("" + model.getYear());
         frame.getContentPane().add(textYear);
         textYear.setColumns(10);
 

@@ -2,14 +2,13 @@ package view;
 
 import model.*;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import javax.swing.*;
-import java.awt.*;
 
-public class SportsmanView extends JFrame {
-    private final Session session;
-    private Sportsman s;
+public class SportsmanView implements EntityView<Sportsman> {
+    private Session session;
+    private Sportsman model;
+    private JFrame frame;
 
     private JTextField textFName;
     private JTextField textMName;
@@ -20,19 +19,26 @@ public class SportsmanView extends JFrame {
     private JSpinner spinnerCountry;
     private JSpinner spinnerMedicine;
 
-    public SportsmanView(Session session, Sportsman s) {
-        this.session = session;
-        this.s = s;
-        initialize();
+    public Session getSession() {
+        return session;
     }
 
-    public SportsmanView(Session session) {
+    @Override
+    public void setSession(Session session) {
         this.session = session;
-        initialize();
     }
 
-    public void initialize() {
-        JFrame frame = this;
+    public Sportsman getModel() {
+        return model;
+    }
+
+    @Override
+    public void setModel(Sportsman model) {
+        this.model = model;
+    }
+
+    public void invoke() {
+        frame = new JFrame();
         frame.setBounds(100, 100, 316, 380);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
@@ -40,8 +46,8 @@ public class SportsmanView extends JFrame {
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
             try {
-                if (s == null) {
-                    s = new Sportsman(
+                if (model == null) {
+                    model = new Sportsman(
                             textFName.getText(),
                             textMName.getText(),
                             textLName.getText(),
@@ -52,19 +58,19 @@ public class SportsmanView extends JFrame {
                             (Medicine) spinnerMedicine.getValue()
                     );
                 } else {
-                    s.setFname(textFName.getText());
-                    s.setMname(textMName.getText());
-                    s.setLname(textLName.getText());
-                    s.setAge(Integer.parseInt(textAge.getText()));
-                    s.setWeight(Integer.parseInt(textWeight.getText()));
-                    s.setResult((Result) spinnerResult.getValue());
-                    s.setCountry((Country) spinnerCountry.getValue());
-                    s.setMedicine((Medicine) spinnerMedicine.getValue());
+                    model.setFname(textFName.getText());
+                    model.setMname(textMName.getText());
+                    model.setLname(textLName.getText());
+                    model.setAge(Integer.parseInt(textAge.getText()));
+                    model.setWeight(Integer.parseInt(textWeight.getText()));
+                    model.setResult((Result) spinnerResult.getValue());
+                    model.setCountry((Country) spinnerCountry.getValue());
+                    model.setMedicine((Medicine) spinnerMedicine.getValue());
                 }
-                session.saveOrUpdate(s);
-                dispose();
+                session.saveOrUpdate(model);
+                frame.dispose();
             } catch(NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "В поле Age или Weight не число!\n" + ex, "Ошибка!", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this.frame, "В поле Age или Weight не число!\n" + ex, "Ошибка!", JOptionPane.ERROR_MESSAGE);
 
             }
         });
@@ -72,37 +78,37 @@ public class SportsmanView extends JFrame {
         frame.getContentPane().add(btnOk);
 
         JButton btnCancel = new JButton("Cancel");
-        btnCancel.addActionListener(e -> dispose());
+        btnCancel.addActionListener(e -> frame.dispose());
         btnCancel.setBounds(189, 293, 97, 25);
         frame.getContentPane().add(btnCancel);
 
         textFName = new JTextField();
         textFName.setBounds(110, 13, 116, 22);
-        if (s != null) textFName.setText(s.getFname());
+        if (model != null) textFName.setText(model.getFname());
         frame.getContentPane().add(textFName);
         textFName.setColumns(10);
 
         textMName = new JTextField();
         textMName.setBounds(110, 48, 116, 22);
-        if (s != null) textMName.setText(s.getMname());
+        if (model != null) textMName.setText(model.getMname());
         frame.getContentPane().add(textMName);
         textMName.setColumns(10);
 
         textLName = new JTextField();
         textLName.setBounds(110, 83, 116, 22);
-        if (s != null) textLName.setText(s.getLname());
+        if (model != null) textLName.setText(model.getLname());
         frame.getContentPane().add(textLName);
         textLName.setColumns(10);
 
         textAge = new JTextField();
         textAge.setBounds(110, 118, 116, 22);
-        if (s != null) textAge.setText("" + s.getAge());
+        if (model != null) textAge.setText("" + model.getAge());
         frame.getContentPane().add(textAge);
         textAge.setColumns(10);
 
         textWeight = new JTextField();
         textWeight.setBounds(110, 153, 116, 22);
-        if (s != null) textWeight.setText("" + s.getWeight());
+        if (model != null) textWeight.setText("" + model.getWeight());
         frame.getContentPane().add(textWeight);
         textWeight.setColumns(10);
 

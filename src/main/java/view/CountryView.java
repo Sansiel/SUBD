@@ -7,23 +7,31 @@ import org.hibernate.Transaction;
 import javax.swing.*;
 import java.awt.*;
 
-public class CountryView extends JFrame {
-    private final Session session;
-    private Country c;
+public class CountryView implements EntityView<Country> {
+    private Session session;
+    private Country model;
+    private JFrame frame;
 
-    public CountryView(Session session) {
-        this.session = session;
-        initialize();
+    public Session getSession() {
+        return session;
     }
 
-    public CountryView(Session session, Country c) throws HeadlessException {
+    @Override
+    public void setSession(Session session) {
         this.session = session;
-        this.c = c;
-        initialize();
     }
 
-    private void initialize(){
-        JFrame frame = this;
+    public Country getModel() {
+        return model;
+    }
+
+    @Override
+    public void setModel(Country model) {
+        this.model = model;
+    }
+
+    public void invoke(){
+        frame = new JFrame();
         frame.setBounds(100, 100, 347, 132);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
@@ -40,20 +48,20 @@ public class CountryView extends JFrame {
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
             Transaction tx1 = session.beginTransaction();
-            if (c == null) {
-                c = new Country(textName.getText());
+            if (model == null) {
+                model = new Country(textName.getText());
             } else {
-                c.setName(textName.getText());
+                model.setName(textName.getText());
             }
-            session.saveOrUpdate(c);
+            session.saveOrUpdate(model);
             tx1.commit();
-            dispose();
+            frame.dispose();
         });
         btnOk.setBounds(111, 47, 97, 25);
         frame.getContentPane().add(btnOk);
 
         JButton btnCancel = new JButton("Cancel");
-        btnCancel.addActionListener(e -> dispose());
+        btnCancel.addActionListener(e -> frame.dispose());
         btnCancel.setBounds(220, 47, 97, 25);
         frame.getContentPane().add(btnCancel);
     }
