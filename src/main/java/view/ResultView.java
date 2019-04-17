@@ -113,5 +113,6 @@ public class ResultView implements EntityView<Result> {
         JLabel lblDiscipline = new JLabel("discipline");
         lblDiscipline.setBounds(12, 118, 56, 16);
         frame.getContentPane().add(lblDiscipline);
+        frame.setVisible(true);
     }
 }

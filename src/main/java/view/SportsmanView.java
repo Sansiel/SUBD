@@ -158,5 +158,6 @@ public class SportsmanView implements EntityView<Sportsman> {
         JLabel lblMedicine = new JLabel("Medicine");
         lblMedicine.setBounds(12, 261, 56, 16);
         frame.getContentPane().add(lblMedicine);
+        frame.setVisible(true);
     }
 }

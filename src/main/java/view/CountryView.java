@@ -64,5 +64,6 @@ public class CountryView implements EntityView<Country> {
         btnCancel.addActionListener(e -> frame.dispose());
         btnCancel.setBounds(220, 47, 97, 25);
         frame.getContentPane().add(btnCancel);
+        frame.setVisible(true);
     }
 }

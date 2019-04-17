@@ -63,6 +63,7 @@ public class DisciplineView implements EntityView<Discipline> {
         btnCancel.addActionListener(e -> frame.dispose());
         btnCancel.setBounds(220, 47, 97, 25);
         frame.getContentPane().add(btnCancel);
+        frame.setVisible(true);
     }
 
 
