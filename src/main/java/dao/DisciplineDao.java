@@ -1,37 +1,56 @@
 package dao;
 
 import model.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+
 import java.util.*;
 
 public class DisciplineDao implements DAO<Discipline>{
-    private List<Discipline> disciplines = new ArrayList<>();
 
-    public DisciplineDao() { }
+    private SessionFactory sf;
 
     @Override
-    public Optional<Discipline> get(long id) {
-        return Optional.ofNullable(disciplines.get((int) id));
+    public void setSessionFactory(SessionFactory sf) {
+        this.sf = sf;
     }
 
     @Override
-    public List<Discipline> getAll() {
+    public Discipline findById(long id) {
+        return sf.openSession().get(Discipline.class, id);
+    }
+
+    @Override
+    public List<Discipline> findAll() {
+        List<Discipline> disciplines = (List<Discipline>) sf.openSession().createQuery("From Discipline").list();
         return disciplines;
     }
 
     @Override
     public void save(Discipline discipline) {
-        disciplines.add(discipline);
+        Session session = sf.openSession();
+        Transaction t = session.beginTransaction();
+        session.save(discipline);
+        t.commit();
+        session.close();
     }
 
     @Override
-    public void update(Discipline discipline, String[] params) {
-        discipline.setName(Objects.requireNonNull(
-                params[0], "Name cannot be null"));
-        disciplines.add(discipline);
+    public void update(Discipline discipline) {
+        Session session = sf.openSession();
+        Transaction t = session.beginTransaction();
+        session.update(discipline);
+        t.commit();
+        session.close();
     }
 
     @Override
     public void delete(Discipline discipline) {
-        disciplines.remove(discipline);
+        Session session = sf.openSession();
+        Transaction t = session.beginTransaction();
+        session.delete(discipline);
+        t.commit();
+        session.close();
     }
 }

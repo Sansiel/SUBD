@@ -1,5 +1,6 @@
 package view;
 
+import dao.DAO;
 import model.*;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -8,19 +9,20 @@ import javax.swing.*;
 import java.awt.*;
 
 public class DisciplineView extends JFrame {
-    private Session session;
+    private DAO<Discipline> dao;
     private Discipline d;
 
-    public DisciplineView(Session session) {
-        this.session = session;
+    public DisciplineView(DAO<Discipline> dao) {
+        this.dao = dao;
         initialize();
     }
 
-    public DisciplineView(Session session, Discipline d) {
-        this.session = session;
+    public DisciplineView(DAO<Discipline> dao, Discipline d) {
+        this.dao = dao;
         this.d = d;
         initialize();
     }
+
 
     private void initialize(){
         JFrame frame = this;
@@ -39,14 +41,14 @@ public class DisciplineView extends JFrame {
 
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
-            Transaction tx1 = session.beginTransaction();
+
             if (d == null) {
                 d = new Discipline(textName.getText());
+                dao.save(d);
             } else {
                 d.setName(textName.getText());
+                dao.update(d);
             }
-            session.saveOrUpdate(d);
-            tx1.commit();
             dispose();
         });
         btnOk.setBounds(111, 47, 97, 25);

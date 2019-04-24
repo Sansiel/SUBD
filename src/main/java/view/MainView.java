@@ -1,5 +1,7 @@
 package view;
 
+import dao.DAO;
+import dao.DisciplineDao;
 import database.ConnectionInfo;
 import model.*;
 import org.hibernate.*;
@@ -19,6 +21,7 @@ public class MainView {
     private ConnectionInfo connectionInfo;
     private Session session;
     private Class currentEntity;
+    private DAO currentEntityDao;
 
     public MainView() {
         this.connectionInfo = null;
@@ -56,23 +59,23 @@ public class MainView {
         JMenu tablesMenu = new JMenu("Справочники");
         {
             JMenuItem openSportsmansMenuItem = new JMenuItem("Sportsman");
-            openSportsmansMenuItem.addActionListener(event -> this.openTable(Sportsman.class));
+            openSportsmansMenuItem.addActionListener(event -> this.openTable(Sportsman.class, null));
             tablesMenu.add(openSportsmansMenuItem);
 
             JMenuItem openResultsMenuItem = new JMenuItem("Result");
-            openResultsMenuItem.addActionListener(event -> this.openTable(Result.class));
+            openResultsMenuItem.addActionListener(event -> this.openTable(Result.class, null));
             tablesMenu.add(openResultsMenuItem);
 
             JMenuItem openMedicinesMenuItem = new JMenuItem("Medicine");
-            openMedicinesMenuItem.addActionListener(event -> this.openTable(Medicine.class));
+            openMedicinesMenuItem.addActionListener(event -> this.openTable(Medicine.class, null));
             tablesMenu.add(openMedicinesMenuItem);
 
             JMenuItem openCountriesMenuItem = new JMenuItem("Country");
-            openCountriesMenuItem.addActionListener(event -> this.openTable(Country.class));
+            openCountriesMenuItem.addActionListener(event -> this.openTable(Country.class, null));
             tablesMenu.add(openCountriesMenuItem);
 
             JMenuItem openDisciplinesMenuItem = new JMenuItem("Discipline");
-            openDisciplinesMenuItem.addActionListener(event -> this.openTable(Discipline.class));
+            openDisciplinesMenuItem.addActionListener(event -> this.openTable(Discipline.class, new DisciplineDao()));
             tablesMenu.add(openDisciplinesMenuItem);
 
             menuBar.add(tablesMenu);
@@ -133,7 +136,7 @@ public class MainView {
     }
 
     private void refreshTable() {
-        if (this.currentEntity != null) this.openTable(this.currentEntity);
+        if (this.currentEntity != null) this.openTable(this.currentEntity, this.currentEntityDao);
     }
 
     private void connect() {
@@ -173,7 +176,7 @@ public class MainView {
         this.statusLabel.setText("Отключено");
     }
 
-    private <T> void openTable(Class<T> entity) {
+    private <T> void openTable(Class<T> entity, DAO<T> dao) {
         if (!this.tryConnect()) {
             return;
         }
@@ -188,6 +191,8 @@ public class MainView {
         if (!models.isEmpty()) {
             this.table.setModel(new view.TableModel(models));
             this.currentEntityLabel.setText(models.get(0).getClass().getName());
+            dao.setSessionFactory(this.connectionInfo.getSessionFactory());
+            this.currentEntityDao = dao;
         }
     }
 
@@ -249,7 +254,7 @@ public class MainView {
                 sv.setVisible(true);
                 break;
             case "model.Discipline":
-                DisciplineView dv = new DisciplineView(this.session);
+                DisciplineView dv = new DisciplineView((DAO<Discipline>) this.currentEntityDao);
                 dv.setVisible(true);
                 break;
             case "model.Result":
@@ -302,7 +307,7 @@ public class MainView {
                 break;
             case "model.Discipline":
                 Discipline d = (Discipline) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-                DisciplineView dv = new DisciplineView(this.session, d);
+                DisciplineView dv = new DisciplineView((DAO<Discipline>) this.currentEntityDao, d);
                 dv.setVisible(true);
                 break;
             case "model.Result":
@@ -355,19 +360,21 @@ public class MainView {
         view.TableModel tableModel = (view.TableModel) this.table.getModel();
         T model = c.cast(tableModel.getEntity(this.table.getSelectedRow()));
 
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            this.session.delete(model);
-            transaction.commit();
-        } catch (HibernateException ex) {
-            if (transaction != null) {
-                transaction.rollback();
-                JOptionPane.showMessageDialog(this.frame, ex, "Ошибка при выполнении транзакции", JOptionPane.ERROR_MESSAGE);
-            }
-        }
+        this.currentEntityDao.delete(model);
 
-        this.openTable(this.currentEntity);
+//        Transaction transaction = null;
+//        try {
+//            transaction = session.beginTransaction();
+//            this.session.delete(model);
+//            transaction.commit();
+//        } catch (HibernateException ex) {
+//            if (transaction != null) {
+//                transaction.rollback();
+//                JOptionPane.showMessageDialog(this.frame, ex, "Ошибка при выполнении транзакции", JOptionPane.ERROR_MESSAGE);
+//            }
+//        }
+
+        this.openTable(this.currentEntity, this.currentEntityDao);
     }
 
     public void setVisible() {
