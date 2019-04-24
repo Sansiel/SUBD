@@ -19,13 +19,11 @@ public class MainView {
     private JLabel statusLabel;
 
     private ConnectionInfo connectionInfo;
-    private Session session;
     private Class currentEntity;
     private DAO currentEntityDao;
 
     public MainView() {
         this.connectionInfo = null;
-        this.session = null;
         this.currentEntity = null;
 
         this.initUI();
@@ -186,7 +184,7 @@ public class MainView {
 //                .stream()
 //                .map(e -> entity.cast(e))
 //                .collect(Collectors.toList());
-        dao.setSessionFactory(this.connectionInfo.getSessionFactory());
+        dao.setSession(this.connectionInfo.getSessionFactory().openSession());
         List<T> models = dao.findAll();
         this.currentEntity = entity;
         if (!models.isEmpty()) {
@@ -250,7 +248,7 @@ public class MainView {
 
         switch (this.currentEntity.getName()) {
             case "model.Sportsman":
-                SportsmanView sv = new SportsmanView(this.session);
+                SportsmanView sv = new SportsmanView(null);
                 sv.setVisible(true);
                 break;
             case "model.Discipline":
@@ -258,15 +256,15 @@ public class MainView {
                 dv.setVisible(true);
                 break;
             case "model.Result":
-                ResultView rv = new ResultView(this.session);
+                ResultView rv = new ResultView(null);
                 rv.setVisible(true);
                 break;
             case "model.Medicine":
-                MedicineView mv = new MedicineView(this.session);
+                MedicineView mv = new MedicineView(null);
                 mv.setVisible(true);
                 break;
             case "model.Country":
-                CountryView cv = new CountryView(this.session);
+                CountryView cv = new CountryView(null);
                 cv.setVisible(true);
                 break;
         }
@@ -302,7 +300,7 @@ public class MainView {
         switch (this.currentEntity.getName()) {
             case "model.Sportsman":
                 Sportsman s = (Sportsman) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-                SportsmanView sv = new SportsmanView(this.session, s);
+                SportsmanView sv = new SportsmanView(null, s);
                 sv.setVisible(true);
                 break;
             case "model.Discipline":
@@ -312,17 +310,17 @@ public class MainView {
                 break;
             case "model.Result":
                 Result r = (Result) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-                ResultView rv = new ResultView(this.session, r);
+                ResultView rv = new ResultView(null, r);
                 rv.setVisible(true);
                 break;
             case "model.Medicine":
                 Medicine m = (Medicine) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-                MedicineView mv = new MedicineView(this.session, m);
+                MedicineView mv = new MedicineView(null, m);
                 mv.setVisible(true);
                 break;
             case "model.Country":
                 Country c = (Country) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-                CountryView cv = new CountryView(this.session, c);
+                CountryView cv = new CountryView(null, c);
                 cv.setVisible(true);
                 break;
         }

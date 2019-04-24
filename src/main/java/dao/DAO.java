@@ -1,13 +1,12 @@
 package dao;
 
-import org.hibernate.SessionFactory;
+import org.hibernate.Session;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface DAO<T> {
 
-    void setSessionFactory(SessionFactory sf);
+    void setSession(Session s);
 
     T findById(long id);
 

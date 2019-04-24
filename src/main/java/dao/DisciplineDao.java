@@ -9,48 +9,42 @@ import java.util.*;
 
 public class DisciplineDao implements DAO<Discipline>{
 
-    private SessionFactory sf;
+    private Session s;
 
     @Override
-    public void setSessionFactory(SessionFactory sf) {
-        this.sf = sf;
+    public void setSession(Session s) {
+        this.s = s;
     }
 
     @Override
     public Discipline findById(long id) {
-        return sf.openSession().get(Discipline.class, id);
+        return s.get(Discipline.class, id);
     }
 
     @Override
     public List<Discipline> findAll() {
-        List<Discipline> disciplines = (List<Discipline>) sf.openSession().createQuery("From Discipline").list();
+        List<Discipline> disciplines = (List<Discipline>) s.createQuery("From Discipline").list();
         return disciplines;
     }
 
     @Override
     public void save(Discipline discipline) {
-        Session session = sf.openSession();
-        Transaction t = session.beginTransaction();
-        session.save(discipline);
+        Transaction t = s.beginTransaction();
+        s.save(discipline);
         t.commit();
-        session.close();
     }
 
     @Override
     public void update(Discipline discipline) {
-        Session session = sf.openSession();
-        Transaction t = session.beginTransaction();
-        session.update(discipline);
+        Transaction t = s.beginTransaction();
+        s.update(discipline);
         t.commit();
-        session.close();
     }
 
     @Override
     public void delete(Discipline discipline) {
-        Session session = sf.openSession();
-        Transaction t = session.beginTransaction();
-        session.delete(discipline);
+        Transaction t = s.beginTransaction();
+        s.delete(discipline);
         t.commit();
-        session.close();
     }
 }
