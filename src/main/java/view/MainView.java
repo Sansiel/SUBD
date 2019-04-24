@@ -146,7 +146,6 @@ public class MainView {
             this.connectionInfo = connectDialog.getConnectionInfo();
             try {
                 SessionFactory sessionFactory = this.connectionInfo.getSessionFactory();
-                this.session = sessionFactory.openSession();
                 this.statusLabel.setText(String.format("Подключено: %s", this.connectionInfo.toString()));
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this.frame, ex, "Ошибка при подключении", JOptionPane.ERROR_MESSAGE);
@@ -155,24 +154,24 @@ public class MainView {
     }
 
     private boolean tryConnect() {
-        if (this.session == null) {
-            this.connect();
-            if (this.session == null) {
-                return false;
-            }
-        }
+//        if (this.session == null) {
+//            this.connect();
+//            if (this.session == null) {
+//                return false;
+//            }
+//        }
         return true;
     }
 
     private void disconnect() {
-        if (this.session != null) {
-            try {
-                this.session.close();
-            } catch (Exception ignored) {
-
-            }
-        }
-        this.session = null;
+//        if (this.session != null) {
+//            try {
+//                this.session.close();
+//            } catch (Exception ignored) {
+//
+//            }
+//        }
+//        this.session = null;
         this.statusLabel.setText("Отключено");
     }
 
@@ -181,17 +180,18 @@ public class MainView {
             return;
         }
 //        String.format("FROM %s ORDER BY id", entity.getName())
-        List q = this.session.createQuery(String.format("FROM %s ORDER BY id", entity.getName())).list();
-        ArrayList<T> models = (ArrayList<T>) q
-                .stream()
-                .map(e -> entity.cast(e))
-                .collect(Collectors.toList());
 
+//        List q = this.session.createQuery(String.format("FROM %s ORDER BY id", entity.getName())).list();
+//        ArrayList<T> models = (ArrayList<T>) q
+//                .stream()
+//                .map(e -> entity.cast(e))
+//                .collect(Collectors.toList());
+        dao.setSessionFactory(this.connectionInfo.getSessionFactory());
+        List<T> models = dao.findAll();
         this.currentEntity = entity;
         if (!models.isEmpty()) {
             this.table.setModel(new view.TableModel(models));
             this.currentEntityLabel.setText(models.get(0).getClass().getName());
-            dao.setSessionFactory(this.connectionInfo.getSessionFactory());
             this.currentEntityDao = dao;
         }
     }

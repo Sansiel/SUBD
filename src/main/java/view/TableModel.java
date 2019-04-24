@@ -4,13 +4,14 @@ import model.*;
 
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class TableModel<T> extends DefaultTableModel {
-    private ArrayList<T> entities;
+    private List<T> entities;
     private Class<T> type;
 
-    public TableModel(ArrayList<T> entities) {
+    public TableModel(List<T> entities) {
         this.entities = entities;
         this.type = (Class<T>) entities.get(0).getClass();
 

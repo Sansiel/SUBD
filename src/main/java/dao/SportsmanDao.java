@@ -3,27 +3,23 @@ package dao;
 import model.*;
 import java.util.*;
 
-public class SportsmanDao implements DAO<Sportsman>{
+public class SportsmanDao {
     private List<Sportsman> sportsmans = new ArrayList<>();
 
     public SportsmanDao() { }
 
-    @Override
     public Optional<Sportsman> get(long id) {
         return Optional.ofNullable(sportsmans.get((int) id));
     }
 
-    @Override
     public List<Sportsman> getAll() {
         return sportsmans;
     }
 
-    @Override
     public void save(Sportsman sportsman) {
         sportsmans.add(sportsman);
     }
 
-    @Override
     public void update(Sportsman sportsman, String[] params) {
         sportsman.setFname(Objects.requireNonNull(
                 params[0], "First Name cannot be null"));
@@ -38,7 +34,6 @@ public class SportsmanDao implements DAO<Sportsman>{
         sportsmans.add(sportsman);
     }
 
-    @Override
     public void delete(Sportsman sportsman) {
         sportsmans.remove(sportsman);
     }
