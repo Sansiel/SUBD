@@ -19,7 +19,6 @@ public class MainView {
     private ConnectionInfo connectionInfo;
     private Session session;
     private Class currentEntity;
-    private EntityView<?> currentEntityView;
 
     public MainView() {
         this.connectionInfo = null;
@@ -57,23 +56,23 @@ public class MainView {
         JMenu tablesMenu = new JMenu("Справочники");
         {
             JMenuItem openSportsmansMenuItem = new JMenuItem("Sportsman");
-            openSportsmansMenuItem.addActionListener(event -> this.openTable(Sportsman.class, new SportsmanView()));
+            openSportsmansMenuItem.addActionListener(event -> this.openTable(Sportsman.class));
             tablesMenu.add(openSportsmansMenuItem);
 
             JMenuItem openResultsMenuItem = new JMenuItem("Result");
-            openResultsMenuItem.addActionListener(event -> this.openTable(Result.class, new ResultView()));
+            openResultsMenuItem.addActionListener(event -> this.openTable(Result.class));
             tablesMenu.add(openResultsMenuItem);
 
             JMenuItem openMedicinesMenuItem = new JMenuItem("Medicine");
-            openMedicinesMenuItem.addActionListener(event -> this.openTable(Medicine.class, new MedicineView()));
+            openMedicinesMenuItem.addActionListener(event -> this.openTable(Medicine.class));
             tablesMenu.add(openMedicinesMenuItem);
 
             JMenuItem openCountriesMenuItem = new JMenuItem("Country");
-            openCountriesMenuItem.addActionListener(event -> this.openTable(Country.class, new CountryView()));
+            openCountriesMenuItem.addActionListener(event -> this.openTable(Country.class));
             tablesMenu.add(openCountriesMenuItem);
 
             JMenuItem openDisciplinesMenuItem = new JMenuItem("Discipline");
-            openDisciplinesMenuItem.addActionListener(event -> this.openTable(Discipline.class, new DisciplineView()));
+            openDisciplinesMenuItem.addActionListener(event -> this.openTable(Discipline.class));
             tablesMenu.add(openDisciplinesMenuItem);
 
             menuBar.add(tablesMenu);
@@ -100,7 +99,7 @@ public class MainView {
             addButton.setAlignmentX(Component.CENTER_ALIGNMENT);
             addButton.addActionListener(event -> {
                 try {
-                    this.addEntity(this.currentEntity, this.currentEntityView);
+                    this.addEntity();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -111,7 +110,7 @@ public class MainView {
             editButton.setAlignmentX(Component.CENTER_ALIGNMENT);
             editButton.addActionListener(event -> {
                 try {
-                    this.editEntity(this.currentEntity, this.currentEntityView);
+                    this.editEntity();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -134,7 +133,7 @@ public class MainView {
     }
 
     private void refreshTable() {
-        if (this.currentEntity != null) this.openTable(this.currentEntity, this.currentEntityView);
+        if (this.currentEntity != null) this.openTable(this.currentEntity);
     }
 
     private void connect() {
@@ -174,11 +173,11 @@ public class MainView {
         this.statusLabel.setText("Отключено");
     }
 
-    private <T> void openTable(Class<T> entity, EntityView<T> entityView) {
+    private <T> void openTable(Class<T> entity) {
         if (!this.tryConnect()) {
             return;
         }
-
+//        String.format("FROM %s ORDER BY id", entity.getName())
         List q = this.session.createQuery(String.format("FROM %s ORDER BY id", entity.getName())).list();
         ArrayList<T> models = (ArrayList<T>) q
                 .stream()
@@ -189,11 +188,10 @@ public class MainView {
         if (!models.isEmpty()) {
             this.table.setModel(new view.TableModel(models));
             this.currentEntityLabel.setText(models.get(0).getClass().getName());
-            this.currentEntityView = entityView;
         }
     }
 
-    private <T> void addEntity(Class<T> e, EntityView<T> ev) throws Exception {
+    private void addEntity() throws Exception {
 //        if (!this.tryConnect() || this.currentEntity == null) {
 //            return;
 //        }
@@ -243,35 +241,33 @@ public class MainView {
 //        }
 //
 //        this.openTable(this.currentEntity);
-        if (e == null) throw new Exception("no");
-        ev.setSession(this.session);
-        ev.invoke();
+        if (this.currentEntity == null) throw new Exception("no");
 
-//        switch (this.currentEntity.getName()) {
-//            case "model.Sportsman":
-//                SportsmanView sv = new SportsmanView(this.session);
-//                sv.setVisible(true);
-//                break;
-//            case "model.Discipline":
-//                DisciplineView dv = new DisciplineView(this.session);
-//                dv.setVisible(true);
-//                break;
-//            case "model.Result":
-//                ResultView rv = new ResultView(this.session);
-//                rv.setVisible(true);
-//                break;
-//            case "model.Medicine":
-//                MedicineView mv = new MedicineView(this.session);
-//                mv.setVisible(true);
-//                break;
-//            case "model.Country":
-//                CountryView cv = new CountryView(this.session);
-//                cv.setVisible(true);
-//                break;
-//        }
+        switch (this.currentEntity.getName()) {
+            case "model.Sportsman":
+                SportsmanView sv = new SportsmanView(this.session);
+                sv.setVisible(true);
+                break;
+            case "model.Discipline":
+                DisciplineView dv = new DisciplineView(this.session);
+                dv.setVisible(true);
+                break;
+            case "model.Result":
+                ResultView rv = new ResultView(this.session);
+                rv.setVisible(true);
+                break;
+            case "model.Medicine":
+                MedicineView mv = new MedicineView(this.session);
+                mv.setVisible(true);
+                break;
+            case "model.Country":
+                CountryView cv = new CountryView(this.session);
+                cv.setVisible(true);
+                break;
+        }
     }
 
-    private <T> void editEntity(Class<T> e, EntityView<T> ev) throws Exception {
+    private void editEntity() throws Exception {
 //        if (!this.tryConnect() || this.table == null || this.table.getEntity().getRowCount() <= 0 || this.table.getSelectedRow() == -1) {
 //            return;
 //        }
@@ -296,40 +292,35 @@ public class MainView {
 //        }
 //
 //        this.openTable(this.currentEntity);
-        if (e == null) throw new Exception("no");
+        if (this.currentEntity == null) throw new Exception("no");
 
-        T s = e.cast(((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow()));
-        ev.setSession(this.session);
-        ev.setModel(s);
-        ev.invoke();
-
-//        switch (this.currentEntity.getName()) {
-//            case "model.Sportsman":
-//                Sportsman s = (Sportsman) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-//                SportsmanView sv = new SportsmanView(this.session, s);
-//                sv.setVisible(true);
-//                break;
-//            case "model.Discipline":
-//                Discipline d = (Discipline) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-//                DisciplineView dv = new DisciplineView(this.session, d);
-//                dv.setVisible(true);
-//                break;
-//            case "model.Result":
-//                Result r = (Result) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-//                ResultView rv = new ResultView(this.session, r);
-//                rv.setVisible(true);
-//                break;
-//            case "model.Medicine":
-//                Medicine m = (Medicine) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-//                MedicineView mv = new MedicineView(this.session, m);
-//                mv.setVisible(true);
-//                break;
-//            case "model.Country":
-//                Country c = (Country) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-//                CountryView cv = new CountryView(this.session, c);
-//                cv.setVisible(true);
-//                break;
-//        }
+        switch (this.currentEntity.getName()) {
+            case "model.Sportsman":
+                Sportsman s = (Sportsman) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
+                SportsmanView sv = new SportsmanView(this.session, s);
+                sv.setVisible(true);
+                break;
+            case "model.Discipline":
+                Discipline d = (Discipline) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
+                DisciplineView dv = new DisciplineView(this.session, d);
+                dv.setVisible(true);
+                break;
+            case "model.Result":
+                Result r = (Result) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
+                ResultView rv = new ResultView(this.session, r);
+                rv.setVisible(true);
+                break;
+            case "model.Medicine":
+                Medicine m = (Medicine) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
+                MedicineView mv = new MedicineView(this.session, m);
+                mv.setVisible(true);
+                break;
+            case "model.Country":
+                Country c = (Country) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
+                CountryView cv = new CountryView(this.session, c);
+                cv.setVisible(true);
+                break;
+        }
     }
 //
 //    private void setDeletedEntity(boolean deleted) {
@@ -376,7 +367,7 @@ public class MainView {
             }
         }
 
-        this.openTable(this.currentEntity, this.currentEntityView);
+        this.openTable(this.currentEntity);
     }
 
     public void setVisible() {
