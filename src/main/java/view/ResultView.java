@@ -1,5 +1,6 @@
 package view;
 
+import dao.DAO;
 import model.*;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -8,7 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ResultView extends JFrame {
-    private final Session session;
+    private DAO<Result> dao;
+    private DAO<Discipline> disciplineDao;
     private Result r;
 
     private JTextField textRecord;
@@ -16,13 +18,15 @@ public class ResultView extends JFrame {
     private JTextField textYear;
     private JSpinner spinner;
 
-    public ResultView(Session session) {
-        this.session = session;
+    public ResultView(DAO<Result> dao, DAO<Discipline> disciplineDao) {
+        this.dao = dao;
+        this.disciplineDao = disciplineDao;
         initialize();
     }
 
-    public ResultView(Session session, Result r) throws HeadlessException {
-        this.session = session;
+    public ResultView(DAO<Result> dao, DAO<Discipline> disciplineDao, Result r) {
+        this.dao = dao;
+        this.disciplineDao = disciplineDao;
         this.r = r;
         initialize();
     }
@@ -35,29 +39,22 @@ public class ResultView extends JFrame {
 
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
-            Transaction tx1 = session.beginTransaction();
-            try {
-                if (r == null) {
-                    r = new Result(
-                            Integer.parseInt(textPlace.getText()),
-                            Integer.parseInt(textYear.getText()),
-                            Integer.parseInt(textRecord.getText()),
-                            (Discipline) spinner.getValue()
-                    );
-                } else {
-                    r.setPlace(Integer.parseInt(textPlace.getText()));
-                    r.setYear(Integer.parseInt(textYear.getText()));
-                    r.setRecord(Integer.parseInt(textRecord.getText()));
-                    r.setDiscipline((Discipline) spinner.getValue());
-                }
-                session.saveOrUpdate(r);
-
-                tx1.commit();
-                dispose();
-            } catch(NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "В поле Place, Year или Record не число!\n" + ex, "Ошибка!", JOptionPane.ERROR_MESSAGE);
-                tx1.commit();
+            if (r == null) {
+                r = new Result(
+                        Integer.parseInt(textPlace.getText()),
+                        Integer.parseInt(textYear.getText()),
+                        Integer.parseInt(textRecord.getText()),
+                        (Discipline) spinner.getValue()
+                );
+                dao.save(r);
+            } else {
+                r.setPlace(Integer.parseInt(textPlace.getText()));
+                r.setYear(Integer.parseInt(textYear.getText()));
+                r.setRecord(Integer.parseInt(textRecord.getText()));
+                r.setDiscipline((Discipline) spinner.getValue());
+                dao.update(r);
             }
+            dispose();
         });
         btnOk.setBounds(80, 177, 97, 25);
         frame.getContentPane().add(btnOk);
@@ -98,7 +95,7 @@ public class ResultView extends JFrame {
         textYear.setColumns(10);
 
         spinner = new JSpinner();
-        spinner.setModel(new SpinnerListModel(this.session.createQuery("FROM model.Discipline ORDER BY id").list()));
+        spinner.setModel(new SpinnerListModel(disciplineDao.findAll()));
         spinner.setBounds(80, 115, 116, 22);
         frame.getContentPane().add(spinner);
 

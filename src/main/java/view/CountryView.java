@@ -1,5 +1,6 @@
 package view;
 
+import dao.DAO;
 import model.*;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -8,16 +9,16 @@ import javax.swing.*;
 import java.awt.*;
 
 public class CountryView extends JFrame {
-    private final Session session;
+    private DAO<Country> dao;
     private Country c;
 
-    public CountryView(Session session) {
-        this.session = session;
+    public CountryView(DAO<Country> dao) {
+        this.dao = dao;
         initialize();
     }
 
-    public CountryView(Session session, Country c) throws HeadlessException {
-        this.session = session;
+    public CountryView(DAO<Country> dao, Country c) {
+        this.dao = dao;
         this.c = c;
         initialize();
     }
@@ -39,14 +40,14 @@ public class CountryView extends JFrame {
 
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
-            Transaction tx1 = session.beginTransaction();
+
             if (c == null) {
                 c = new Country(textName.getText());
+                dao.save(c);
             } else {
                 c.setName(textName.getText());
+                dao.update(c);
             }
-            session.saveOrUpdate(c);
-            tx1.commit();
             dispose();
         });
         btnOk.setBounds(111, 47, 97, 25);

@@ -1,5 +1,6 @@
 package view;
 
+import dao.DAO;
 import model.*;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -8,7 +9,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class SportsmanView extends JFrame {
-    private final Session session;
+    private DAO<Sportsman> dao;
+    private DAO<Medicine> medicineDAO;
+    private DAO<Result> resultDAO;
+    private DAO<Country> countryDAO;
     private Sportsman s;
 
     private JTextField textFName;
@@ -20,14 +24,20 @@ public class SportsmanView extends JFrame {
     private JSpinner spinnerCountry;
     private JSpinner spinnerMedicine;
 
-    public SportsmanView(Session session, Sportsman s) {
-        this.session = session;
-        this.s = s;
+    public SportsmanView(DAO<Sportsman> dao, DAO<Medicine> medicineDAO,DAO<Result> resultDAO, DAO<Country> countryDAO) {
+        this.dao = dao;
+        this.medicineDAO = medicineDAO;
+        this.resultDAO = resultDAO;
+        this.countryDAO = countryDAO;
         initialize();
     }
 
-    public SportsmanView(Session session) {
-        this.session = session;
+    public SportsmanView(DAO<Sportsman> dao, DAO<Medicine> medicineDAO,DAO<Result> resultDAO, DAO<Country> countryDAO, Sportsman s) {
+        this.dao = dao;
+        this.medicineDAO = medicineDAO;
+        this.resultDAO = resultDAO;
+        this.countryDAO = countryDAO;
+        this.s = s;
         initialize();
     }
 
@@ -39,34 +49,30 @@ public class SportsmanView extends JFrame {
 
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
-            try {
-                if (s == null) {
-                    s = new Sportsman(
-                            textFName.getText(),
-                            textMName.getText(),
-                            textLName.getText(),
-                            Integer.parseInt(textAge.getText()),
-                            Integer.parseInt(textWeight.getText()),
-                            (Result) spinnerResult.getValue(),
-                            (Country) spinnerCountry.getValue(),
-                            (Medicine) spinnerMedicine.getValue()
-                    );
-                } else {
-                    s.setFname(textFName.getText());
-                    s.setMname(textMName.getText());
-                    s.setLname(textLName.getText());
-                    s.setAge(Integer.parseInt(textAge.getText()));
-                    s.setWeight(Integer.parseInt(textWeight.getText()));
-                    s.setResult((Result) spinnerResult.getValue());
-                    s.setCountry((Country) spinnerCountry.getValue());
-                    s.setMedicine((Medicine) spinnerMedicine.getValue());
-                }
-                session.saveOrUpdate(s);
-                dispose();
-            } catch(NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "В поле Age или Weight не число!\n" + ex, "Ошибка!", JOptionPane.ERROR_MESSAGE);
-
+            if (s == null) {
+                s = new Sportsman(
+                        textFName.getText(),
+                        textMName.getText(),
+                        textLName.getText(),
+                        Integer.parseInt(textAge.getText()),
+                        Integer.parseInt(textWeight.getText()),
+                        (Result) spinnerResult.getValue(),
+                        (Country) spinnerCountry.getValue(),
+                        (Medicine) spinnerMedicine.getValue()
+                );
+                dao.save(s);
+            } else {
+                s.setFname(textFName.getText());
+                s.setMname(textMName.getText());
+                s.setLname(textLName.getText());
+                s.setAge(Integer.parseInt(textAge.getText()));
+                s.setWeight(Integer.parseInt(textWeight.getText()));
+                s.setResult((Result) spinnerResult.getValue());
+                s.setCountry((Country) spinnerCountry.getValue());
+                s.setMedicine((Medicine) spinnerMedicine.getValue());
+                dao.update(s);
             }
+            dispose();
         });
         btnOk.setBounds(80, 293, 97, 25);
         frame.getContentPane().add(btnOk);
@@ -107,17 +113,17 @@ public class SportsmanView extends JFrame {
         textWeight.setColumns(10);
 
         spinnerResult = new JSpinner();
-        spinnerResult.setModel(new SpinnerListModel(this.session.createQuery("FROM model.Result ORDER BY id").list()));
+        spinnerResult.setModel(new SpinnerListModel(resultDAO.findAll()));
         spinnerResult.setBounds(110, 188, 116, 22);
         frame.getContentPane().add(spinnerResult);
 
         spinnerCountry = new JSpinner();
-        spinnerCountry.setModel(new SpinnerListModel(this.session.createQuery("FROM model.Country ORDER BY id").list()));
+        spinnerCountry.setModel(new SpinnerListModel(countryDAO.findAll()));
         spinnerCountry.setBounds(110, 223, 116, 22);
         frame.getContentPane().add(spinnerCountry);
 
         spinnerMedicine = new JSpinner();
-        spinnerMedicine.setModel(new SpinnerListModel(this.session.createQuery("FROM model.Medicine ORDER BY id").list()));
+        spinnerMedicine.setModel(new SpinnerListModel(medicineDAO.findAll()));
         spinnerMedicine.setBounds(110, 258, 116, 22);
         frame.getContentPane().add(spinnerMedicine);
 

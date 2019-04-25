@@ -1,7 +1,6 @@
 package view;
 
-import dao.DAO;
-import dao.DisciplineDao;
+import dao.*;
 import database.ConnectionInfo;
 import model.*;
 import org.hibernate.*;
@@ -57,19 +56,19 @@ public class MainView {
         JMenu tablesMenu = new JMenu("Справочники");
         {
             JMenuItem openSportsmansMenuItem = new JMenuItem("Sportsman");
-            openSportsmansMenuItem.addActionListener(event -> this.openTable(Sportsman.class, null));
+            openSportsmansMenuItem.addActionListener(event -> this.openTable(Sportsman.class, new SportsmanDao()));
             tablesMenu.add(openSportsmansMenuItem);
 
             JMenuItem openResultsMenuItem = new JMenuItem("Result");
-            openResultsMenuItem.addActionListener(event -> this.openTable(Result.class, null));
+            openResultsMenuItem.addActionListener(event -> this.openTable(Result.class, new ResultDao()));
             tablesMenu.add(openResultsMenuItem);
 
             JMenuItem openMedicinesMenuItem = new JMenuItem("Medicine");
-            openMedicinesMenuItem.addActionListener(event -> this.openTable(Medicine.class, null));
+            openMedicinesMenuItem.addActionListener(event -> this.openTable(Medicine.class, new MedicineDao()));
             tablesMenu.add(openMedicinesMenuItem);
 
             JMenuItem openCountriesMenuItem = new JMenuItem("Country");
-            openCountriesMenuItem.addActionListener(event -> this.openTable(Country.class, null));
+            openCountriesMenuItem.addActionListener(event -> this.openTable(Country.class, new CountryDao()));
             tablesMenu.add(openCountriesMenuItem);
 
             JMenuItem openDisciplinesMenuItem = new JMenuItem("Discipline");
@@ -248,7 +247,7 @@ public class MainView {
 
         switch (this.currentEntity.getName()) {
             case "model.Sportsman":
-                SportsmanView sv = new SportsmanView(null);
+                SportsmanView sv = new SportsmanView((DAO<Sportsman>) this.currentEntityDao, (DAO<Medicine>) this.currentEntityDao, (DAO<Result>) this.currentEntityDao, (DAO<Country>) this.currentEntityDao);
                 sv.setVisible(true);
                 break;
             case "model.Discipline":
@@ -256,15 +255,15 @@ public class MainView {
                 dv.setVisible(true);
                 break;
             case "model.Result":
-                ResultView rv = new ResultView(null);
+                ResultView rv = new ResultView((DAO<Result>) this.currentEntityDao, (DAO<Discipline>) this.currentEntityDao);
                 rv.setVisible(true);
                 break;
             case "model.Medicine":
-                MedicineView mv = new MedicineView(null);
+                MedicineView mv = new MedicineView((DAO<Medicine>) this.currentEntityDao);
                 mv.setVisible(true);
                 break;
             case "model.Country":
-                CountryView cv = new CountryView(null);
+                CountryView cv = new CountryView((DAO<Country>) this.currentEntityDao);
                 cv.setVisible(true);
                 break;
         }
@@ -300,7 +299,7 @@ public class MainView {
         switch (this.currentEntity.getName()) {
             case "model.Sportsman":
                 Sportsman s = (Sportsman) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-                SportsmanView sv = new SportsmanView(null, s);
+                SportsmanView sv = new SportsmanView((DAO<Sportsman>) this.currentEntityDao, (DAO<Medicine>) this.currentEntityDao, (DAO<Result>) this.currentEntityDao, (DAO<Country>) this.currentEntityDao, s);
                 sv.setVisible(true);
                 break;
             case "model.Discipline":
@@ -310,17 +309,17 @@ public class MainView {
                 break;
             case "model.Result":
                 Result r = (Result) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-                ResultView rv = new ResultView(null, r);
+                ResultView rv = new ResultView((DAO<Result>) this.currentEntityDao, (DAO<Discipline>) this.currentEntityDao, r);
                 rv.setVisible(true);
                 break;
             case "model.Medicine":
                 Medicine m = (Medicine) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-                MedicineView mv = new MedicineView(null, m);
+                MedicineView mv = new MedicineView((DAO<Medicine>) this.currentEntityDao, m);
                 mv.setVisible(true);
                 break;
             case "model.Country":
                 Country c = (Country) ((view.TableModel) this.table.getModel()).getEntity(this.table.getSelectedRow());
-                CountryView cv = new CountryView(null, c);
+                CountryView cv = new CountryView((DAO<Country>) this.currentEntityDao, c);
                 cv.setVisible(true);
                 break;
         }

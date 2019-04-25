@@ -1,94 +1,49 @@
 package dao;
 
-import java.util.List;
+import model.*;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
 
-import model.Country;
+import java.util.*;
 
-public class CountryDao implements DaoInterface<Country, String> {
+public class CountryDao implements DAO<Country>{
 
-    private Session currentSession;
+    private Session s;
 
-    private Transaction currentTransaction;
-
-    public CountryDao() {
+    @Override
+    public void setSession(Session s) {
+        this.s = s;
     }
 
-    public Session openCurrentSession() {
-        currentSession = getSessionFactory().openSession();
-        return currentSession;
+    @Override
+    public Country findById(long id) {
+        return s.get(Country.class, id);
     }
 
-    public Session openCurrentSessionwithTransaction() {
-        currentSession = getSessionFactory().openSession();
-        currentTransaction = currentSession.beginTransaction();
-        return currentSession;
-    }
-
-    public void closeCurrentSession() {
-        currentSession.close();
-    }
-
-    public void closeCurrentSessionwithTransaction() {
-        currentTransaction.commit();
-        currentSession.close();
-    }
-
-    private static SessionFactory getSessionFactory() {
-        Configuration configuration = new Configuration().configure();
-        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder()
-                .applySettings(configuration.getProperties());
-        SessionFactory sessionFactory = configuration.buildSessionFactory(builder.build());
-        return sessionFactory;
-    }
-
-    public Session getCurrentSession() {
-        return currentSession;
-    }
-
-    public void setCurrentSession(Session currentSession) {
-        this.currentSession = currentSession;
-    }
-
-    public Transaction getCurrentTransaction() {
-        return currentTransaction;
-    }
-
-    public void setCurrentTransaction(Transaction currentTransaction) {
-        this.currentTransaction = currentTransaction;
-    }
-
-    public void persist(Country entity) {
-        getCurrentSession().save(entity);
-    }
-
-    public void update(Country entity) {
-        getCurrentSession().update(entity);
-    }
-
-    public Country findById(String id) {
-        Country country = (Country) getCurrentSession().get(Country.class, id);
-        return country;
-    }
-
-    public void delete(Country entity) {
-        getCurrentSession().delete(entity);
-    }
-
-    @SuppressWarnings("unchecked")
+    @Override
     public List<Country> findAll() {
-        List<Country> countries = (List<Country>) getCurrentSession().createQuery("from Country").list();
-        return countries;
+        List<Country> counties = (List<Country>) s.createQuery("From Country").list();
+        return counties;
     }
 
-    public void deleteAll() {
-        List<Country> entityList = findAll();
-        for (Country entity : entityList) {
-            delete(entity);
-        }
+    @Override
+    public void save(Country country) {
+        Transaction t = s.beginTransaction();
+        s.save(country);
+        t.commit();
+    }
+
+    @Override
+    public void update(Country country) {
+        Transaction t = s.beginTransaction();
+        s.update(country);
+        t.commit();
+    }
+
+    @Override
+    public void delete(Country country) {
+        Transaction t = s.beginTransaction();
+        s.delete(country);
+        t.commit();
     }
 }

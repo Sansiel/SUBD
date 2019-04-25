@@ -41,7 +41,6 @@ public class DisciplineView extends JFrame {
 
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
-
             if (d == null) {
                 d = new Discipline(textName.getText());
                 dao.save(d);

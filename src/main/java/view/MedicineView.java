@@ -1,5 +1,6 @@
 package view;
 
+import dao.DAO;
 import model.*;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -8,16 +9,16 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MedicineView extends JFrame {
-    private final Session session;
+    private DAO<Medicine> dao;
     private Medicine m;
 
-    public MedicineView(Session session) throws HeadlessException {
-        this.session = session;
+    public MedicineView(DAO<Medicine> dao) {
+        this.dao = dao;
         initialize();
     }
 
-    public MedicineView(Session session, Medicine m) throws HeadlessException {
-        this.session = session;
+    public MedicineView(DAO<Medicine> dao, Medicine m) {
+        this.dao = dao;
         this.m = m;
         initialize();
     }
@@ -39,14 +40,13 @@ public class MedicineView extends JFrame {
 
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
-            Transaction tx1 = session.beginTransaction();
             if (m == null) {
                 m = new Medicine(textName.getText());
+                dao.save(m);
             } else {
                 m.setName(textName.getText());
+                dao.update(m);
             }
-            session.saveOrUpdate(m);
-            tx1.commit();
             dispose();
         });
         btnOk.setBounds(111, 47, 97, 25);

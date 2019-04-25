@@ -1,32 +1,49 @@
 package dao;
 
 import model.*;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
 import java.util.*;
 
-public class MedicineDao {
-    private List<Medicine> medicines = new ArrayList<>();
+public class MedicineDao implements DAO<Medicine>{
 
-    public MedicineDao() { }
+    private Session s;
 
-    public Optional<Medicine> get(long id) {
-        return Optional.ofNullable(medicines.get((int) id));
+    @Override
+    public void setSession(Session s) {
+        this.s = s;
     }
 
-    public List<Medicine> getAll() {
+    @Override
+    public Medicine findById(long id) {
+        return s.get(Medicine.class, id);
+    }
+
+    @Override
+    public List<Medicine> findAll() {
+        List<Medicine> medicines = (List<Medicine>) s.createQuery("From Medicine").list();
         return medicines;
     }
 
+    @Override
     public void save(Medicine medicine) {
-        medicines.add(medicine);
+        Transaction t = s.beginTransaction();
+        s.save(medicine);
+        t.commit();
     }
 
-    public void update(Medicine medicine, String[] params) {
-        medicine.setName(Objects.requireNonNull(
-                params[0], "Name cannot be null"));
-        medicines.add(medicine);
+    @Override
+    public void update(Medicine medicine) {
+        Transaction t = s.beginTransaction();
+        s.update(medicine);
+        t.commit();
     }
 
+    @Override
     public void delete(Medicine medicine) {
-        medicines.remove(medicine);
+        Transaction t = s.beginTransaction();
+        s.delete(medicine);
+        t.commit();
     }
 }

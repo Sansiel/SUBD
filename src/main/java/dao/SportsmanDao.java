@@ -1,40 +1,49 @@
 package dao;
 
 import model.*;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
 import java.util.*;
 
-public class SportsmanDao {
-    private List<Sportsman> sportsmans = new ArrayList<>();
+public class SportsmanDao implements DAO<Sportsman>{
 
-    public SportsmanDao() { }
+    private Session s;
 
-    public Optional<Sportsman> get(long id) {
-        return Optional.ofNullable(sportsmans.get((int) id));
+    @Override
+    public void setSession(Session s) {
+        this.s = s;
     }
 
-    public List<Sportsman> getAll() {
+    @Override
+    public Sportsman findById(long id) {
+        return s.get(Sportsman.class, id);
+    }
+
+    @Override
+    public List<Sportsman> findAll() {
+        List<Sportsman> sportsmans = (List<Sportsman>) s.createQuery("From Sportsman").list();
         return sportsmans;
     }
 
+    @Override
     public void save(Sportsman sportsman) {
-        sportsmans.add(sportsman);
+        Transaction t = s.beginTransaction();
+        s.save(sportsman);
+        t.commit();
     }
 
-    public void update(Sportsman sportsman, String[] params) {
-        sportsman.setFname(Objects.requireNonNull(
-                params[0], "First Name cannot be null"));
-        sportsman.setMname(Objects.requireNonNull(
-                params[1], "Mid Name cannot be null"));
-        sportsman.setLname(Objects.requireNonNull(
-                params[2], "Last Name cannot be null"));
-        sportsman.setAge(Integer.parseInt(Objects.requireNonNull(
-                params[3], "Age cannot be null")));
-        sportsman.setWeight(Integer.parseInt(Objects.requireNonNull(
-                params[4], "Weight cannot be null")));
-        sportsmans.add(sportsman);
+    @Override
+    public void update(Sportsman sportsman) {
+        Transaction t = s.beginTransaction();
+        s.update(sportsman);
+        t.commit();
     }
 
+    @Override
     public void delete(Sportsman sportsman) {
-        sportsmans.remove(sportsman);
+        Transaction t = s.beginTransaction();
+        s.delete(sportsman);
+        t.commit();
     }
 }
