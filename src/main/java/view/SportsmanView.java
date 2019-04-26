@@ -2,6 +2,7 @@ package view;
 
 import model.*;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import javax.swing.*;
 
@@ -67,12 +68,16 @@ public class SportsmanView implements EntityView<Sportsman> {
                     model.setCountry((Country) spinnerCountry.getValue());
                     model.setMedicine((Medicine) spinnerMedicine.getValue());
                 }
+                Transaction tx1 = session.beginTransaction();
                 session.saveOrUpdate(model);
+                tx1.commit();
                 frame.dispose();
             } catch(NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this.frame, "В поле Age или Weight не число!\n" + ex, "Ошибка!", JOptionPane.ERROR_MESSAGE);
-
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this.frame, ex, "Ошибка!", JOptionPane.ERROR_MESSAGE);
             }
+            frame.dispose();
         });
         btnOk.setBounds(80, 293, 97, 25);
         frame.getContentPane().add(btnOk);
